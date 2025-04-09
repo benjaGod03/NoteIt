@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>NoteIt</title>
+    <link rel="stylesheet" href="css/styles.css">
+ 
+</head>
+<body>
+    <div class="formulario">
+        <h1>Inicio de sesion</h1>
+        <form method="post" action="main.html">
+            <div class="form-group username">
+                <input type="text" id="username" required>
+                <label for="username">Nombre de usuario</label>
+            </div>
+            <div class="form-group Contraseña">
+                <input type="password" id="password" required>
+                <label for="password">Contraseña</label>
+                <button type="button" onclick="togglePassword()" class="toggle-pass">👁️</button>
+            </div>
+            <!--si queremos para recordar contraseña seria
+            <div class="recordad">¿Olvido su contraseña?</div>-->
+        
+            <input type="submit" value="Iniciar">
+            
+            <div class="registrarse">
+                ¿No tienes cuenta? <a href="registrarse.html">registrarse</a>
+            </div>
+        </form>
+    </div>
+    
+    <!-- este script es basicamente JS embebido, no hace falta crear un archivo .js (por ahora)-->
+    <script> 
+        function togglePassword() { 
+          const input = document.getElementById("password");
+          input.type = input.type === "password" ? "text" : "password";
+        }
+      </script>
+</body>
+</html>
