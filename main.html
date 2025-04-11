@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NoteIt</title>
+    <link rel="stylesheet" href="css/stylesmain.css">
+</head>
+<body>
+    <header class="page-header">
+      <h1>Notas grupales</h1>
+    </header>
+    <div class="wrapper" id="contenedor-notas"> <!--solo le agregue un nombre mas identificable-->
+        <div class="add-box" onclick="agregarNota()">  <!-- sirve para el script de js-->
+          <div class="icon"><i class="uil uil-plus"></i></div>
+          <p>Agregar nueva nota</p>
+        </div>
+
+      <script>
+        function agregarNota() { 
+          const contenedor = document.getElementById('contenedor-notas');
+          const nuevaNota = document.createElement('div'); //crea la nota nueva
+          nuevaNota.classList.add('note-box');  
+          //aca le dice al atributo nuevaNota que va a tener dentro lo siguiente
+          nuevaNota.innerHTML = ` 
+            <button class="delete-btn">🗑</button>
+            <h3 class="note-title" contenteditable="true">Titulo de nota</h3>
+            <p class="note-content" contenteditable="true">agregar texto :)</p>
+          `;
+
+          //funcion para borrar nota
+          nuevaNota.querySelector('.delete-btn').addEventListener('click', function(e) {
+          e.stopPropagation(); // esto por ahora no anda, va a servir en un futuro para ampliar la nota y que no se rompa nada
+          nuevaNota.remove();
+        });
+
+          const cajaAgregar = contenedor.querySelector('.add-box'); 
+          contenedor.insertBefore(nuevaNota, cajaAgregar.nextSibling); //agrega la nueva nota despues del boton agregar nueva nota
+        }                                                              //funciona raro igual
+
+        // detecta el click y abre la nota
+          document.addEventListener('click', function(e) {
+          const nota = e.target.closest('.note-box');
+          if (nota && !e.target.classList.contains('delete-btn')) {
+          ampliarNota(nota);
+         }
+        });
+
+          function ampliarNota(notaOriginal) {
+          const overlay = document.createElement('div');
+          overlay.className = 'overlay';
+
+        // aca se clona la nota
+          const notaClonada = notaOriginal.cloneNode(true);
+          notaClonada.className = 'ampliada';
+
+        // boton para cerrarla (dps quiero hacer que se cierre cn apretar afuera de la nota)
+          const cerrarBtn = document.createElement('button');
+          cerrarBtn.className = 'cerrar-btn';
+          cerrarBtn.innerHTML = '✖';
+          cerrarBtn.onclick = () => overlay.remove();
+          notaClonada.appendChild(cerrarBtn);
+          overlay.appendChild(notaClonada);
+          document.body.appendChild(overlay);
+        }
+        </script>
+        
+</body>
+</html>

@@ -1,0 +1,186 @@
+body {
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(150deg, #f48fb1, #af7ac5, #d4ac0d);
+  background-size: 200% 200%;
+  font-family: 'Poppins', sans-serif;
+  animation: gradientShift 10s ease-in-out infinite alternate;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes gradientShift {
+0% {
+  background-position: 0% 50%;
+}
+100% {
+  background-position: 100% 50%;
+}
+}
+.header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 20px 40px;
+background-color: rgba(255, 255, 255, 0.2);
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+position: sticky;
+top: 0;
+z-index: 1000;
+}
+.logo h1 {
+font-size: 1.5rem;
+color: white;
+font-weight: bold;
+}
+.logo {
+display: flex;
+align-items: center;
+gap: 10px;
+font-size: 2rem;
+color: white;
+}
+
+.logo-icon {
+width: 32px;
+height: 32px;
+object-fit: contain;
+}
+
+.wrapper {
+background-color: rgba(255, 255, 255, 0.8);
+width: 90%;
+margin: auto;
+padding: 20px;
+border-radius: 20px;
+box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+gap: 10px;
+flex: 1;
+overflow: auto;
+}
+
+/* boton para agregar nota */
+.add-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 5%;
+  background: rgba(240, 240, 240, 0.8);
+  border: 2px dashed #999;
+  border-radius: 10px;
+  color: #666;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.add-box:hover {
+  background-color: #e0e0e0;
+}
+
+.add-box .icon {
+  height: 78px;
+  width: 78px;
+  border: 2px dashed #af7ac5;
+  border-radius: 50%;
+  font-size: 30px;
+  margin-bottom: 10px;
+}
+
+/* Estilo de las notas */
+.note-box {
+  aspect-ratio: 1 / 1; /* hace que sean cuadradas */
+  margin: 5%;
+  background-color: #f7dc6f; 
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease;
+  overflow: hidden;
+}
+
+.note-box:hover {
+  transform: translateY(-4px);
+}
+
+.note-title {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #333;
+  font-weight: bold;
+  outline: none;
+}
+
+.note-content {
+  margin-top: 10px;
+  color: #444;
+  outline: none;
+  white-space: pre-wrap;
+}
+
+/* borrar nota tachito*/ 
+.delete-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  float: right;
+  color: #a00;
+  margin-bottom: 5px;
+}
+
+.delete-btn:hover {
+  color: #d00;
+}
+
+/* fondo oscuro atras de la nota ampliada */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+/* estilo de la nota ampliada */
+.ampliada {
+  background-color: #fff8dc;
+  padding: 30px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90%;
+  overflow: auto;
+  border-radius: 15px;
+  box-shadow: 0 0 20px #000;
+  position: relative;
+  animation: fadeIn 0.3s ease;
+}
+
+.ampliada h3, .ampliada p {
+  outline: none;
+}
+
+/* el boton q cierra la nota ampliada */
+.cerrar-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #a00;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
