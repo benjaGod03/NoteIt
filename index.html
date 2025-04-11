@@ -1,40 +1,38 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <title>NoteIt</title>
+    <meta charset="UTF-8">
+    <title>NoteIt - Inicio</title>
     <link rel="stylesheet" href="css/styles.css">
- 
 </head>
 <body>
-    <div class="formulario">
-        <h1>Inicio de sesion en NoteIt</h1>
-        <form method="get" action="main.html">  <!-- cambie "post" por "get" ya que el github page no lee POST-->
-            <div class="form-group username">
-                <input type="text" id="username" required>
-                <label for="username">Nombre de usuario</label>
-            </div>
-            <div class="form-group Contraseña">
-                <input type="password" id="password" required>
-                <label for="password">Contraseña</label>
-                <button type="button" onclick="togglePassword()" class="toggle-pass">👁️</button>
-            </div>
-            <!--si queremos para recordar contraseña seria
-            <div class="recordad">¿Olvido su contraseña?</div>-->
-        
-            <input type="submit" value="Iniciar">
-            
-            <div class="registrarse">
-                ¿No tienes cuenta? <a href="registrarse.html">registrarse</a>
-            </div>
-        </form>
-    </div>
-    
-    <!-- este script es basicamente JS embebido, no hace falta crear un archivo .js (por ahora)-->
-    <script> 
-        function togglePassword() { 
-          const input = document.getElementById("password");
-          input.type = input.type === "password" ? "text" : "password";
-        }
-      </script>
+    <header class="header">
+        <div class="logo">
+        <img src="images/iconoNoteIt.png" alt="Icono NoteIt" class="logo-icon">
+        <h1>NoteIt</h1></div>
+        <nav>
+            <a href="login.html" class="btn">Iniciar sesión</a>
+        </nav>
+    </header>
+
+    <main class="contenido">
+        <h1>Notas compartidas, ideas conectadas.</h1>
+        <p>Captura tus ideas en grupo de la forma mas facil, en cualquier momento.</p>
+        <a href="registrarse.html" class="btn">Empezar ahora</a>
+    </main>
+    <section class="guia">
+        <div class="guia-texto">
+            <h2>¿Cómo funciona NoteIt?</h2>
+            <p>1. Registrate y accedé a tu cuenta.<br>
+               2. Invita a colaboradores de pensamiento<br>
+               3. Creá, editá y organizá tus notas.<br>
+               4. Accedé en cualquier momento</p>
+        </div>
+        <div class="video-tutorial">
+            <!-- aca va el video -->
+            <iframe width="100%" height="315" src="aa"
+                    title="Video tutorial" frameborder="0" allowfullscreen></iframe>
+        </div>
+    </section>
 </body>
 </html>
