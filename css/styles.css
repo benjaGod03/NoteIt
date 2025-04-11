@@ -1,12 +1,13 @@
 /*fondo base*/ 
 body {
+    height: 100%;
     margin: 0;
     padding: 0;
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(150deg, #f48fb1, #af7ac5, #d4ac0d);
+    background: linear-gradient(150deg,#F48FB1, #6633CC, #F9E79F);
     background-size: 200% 200%;
     animation: gradientShift 5s ease-in-out infinite alternate;
-    height: 100vh;
+    min-height: 100vh;
 }
 /* keyframes es para crear animaciones, lo uso para q se mueva el fondo*/
 @keyframes gradientShift {
@@ -17,23 +18,71 @@ body {
       background-position: 100% 50%;
     }
   }
-/*la cajita de registo*/ 
+  h1, h2, p {
+    margin: 0;
+    padding: 0;
+}
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+  .logo h1 {
+    font-size: 2.2rem;
+    color: white;
+    font-weight: bold;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 2rem;
+    color: white;
+  }
+  
+  .logo-icon {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+  }
+
+  /* === GLOBAL === */
+* {
+    box-sizing: border-box;
+}
+*::before,
+*::after {
+    box-sizing: inherit;
+}
+
+/*login*/ 
+.login-contenedor{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 0; /* espacio arriba y abajo para compensar el header */
+    min-height: calc(100vh - 80px);
+  }
 .formulario {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    text-align: center;
     width: 400px;
     backdrop-filter: blur(10px);
     background: rgba(240, 209, 240, 0.486); 
     border: 1px solid rgba(255, 255, 255, 0.3); /* Borde tipo glass */
     border-radius: 10px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    padding-bottom: 30px;
 }
 /*titulo*/
 .formulario h1 {
     text-align: center;
-    padding: 0 0 20px;
+    padding: 15px 0 15px;
     border-bottom: 1px solid #d4ac0d;
 }
 
@@ -90,8 +139,8 @@ body {
     width: 100%;
 }
 /*para el boton iniciar*/
-input[type="submit"] {
-    width: 100%;
+.btn {
+    width: 150px;
     height: 50px;
     border: 1px solid;
     background: #76448a;
@@ -100,9 +149,13 @@ input[type="submit"] {
     color: white;
     cursor: pointer;
     outline: none;
+    text-align: center;
+    display: inline-block;
+    line-height: 50px;
+    text-decoration: none;
 }
 
-input[type="submit"]:hover {
+.btn:hover {
     border-color: #af7ac5;
     transition: .5s;
 }
@@ -122,7 +175,6 @@ input[type="submit"]:hover {
 .registrarse a:hover {
     text-decoration: underline;
 }
-
 /*ojito a la derecha */
 .toggle-pass {
     position: absolute;
@@ -136,3 +188,80 @@ input[type="submit"]:hover {
     color: #76448a;
     z-index: 2;
 }
+/* === HOMEPAGE === */
+.contenido {
+    min-height: 100vh;
+    padding: 100px 60px 60px;
+    color: white;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.contenido h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+.contenido p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    max-width: 600px;
+}
+
+.guia {
+    background-color: #2e2e3e;
+    color: white;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 80px 60px;
+    gap: 40px;
+}
+
+.guia-texto {
+    flex: 1;
+    min-width: 280px;
+}
+
+.guia-texto h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.guia-texto p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.video-tutorial {
+    flex: 1;
+    min-width: 280px;
+}
+
+.video-tutorial iframe {
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    height: 315px;
+}
+
+/* ojo cerrar abrir*/
+.eye-icon {
+    width: 24px;
+    height: 24px;
+    stroke: #76448a;
+  }
+
+  .hidden {
+    display: none;
+  }
+  
+
+
+ 
+  
+  
+  
