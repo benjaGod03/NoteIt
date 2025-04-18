@@ -71,13 +71,15 @@ body {
   }
 .formulario {
     text-align: center;
-    width: 400px;
+    width: 90%;
+    max-width: 400px;
+    margin: 0 20px;
     backdrop-filter: blur(10px);
     background: rgba(240, 209, 240, 0.486); 
     border: 1px solid rgba(255, 255, 255, 0.3); /* Borde tipo glass */
     border-radius: 10px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    padding-bottom: 30px;
+    padding: 0 10px;
 }
 /*titulo*/
 .formulario h1 {
@@ -87,14 +89,16 @@ body {
 }
 
 .formulario form {
-    padding: 0 40px;
+    padding: 30px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
     box-sizing: border-box;
 }
 
 .form-group {
     position: relative;
     border-bottom: 2px solid #76448a;
-    margin: 30px 0;
 }
 
 .form-group input {
@@ -130,7 +134,7 @@ body {
     transition: .5s;
 }
 
-.form-group input:focus ~ label, .form-group input:valid ~ label {
+.form-group input:focus ~ label, .form-group input:not(:placeholder-shown) ~ label {
     top: -5px;
     color: #76448a;
 }
@@ -258,10 +262,44 @@ body {
   .hidden {
     display: none;
   }
-  
+/*para hacerlo responsive*/
+/* Tablets y pantallas medianas */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 20px;
+    }
 
+    .contenido {
+        padding: 60px 30px;
+    }
 
- 
-  
-  
-  
+    .guia {
+        flex-direction: column;
+        padding: 40px 30px;
+    }
+}
+/* Celulares */
+@media (max-width: 480px) {
+    .logo h1 {
+        font-size: 1.5rem;
+    }
+    .contenido h1 {
+        font-size: 2rem;
+    }
+    .contenido p {
+        font-size: 1rem;
+    }
+    .guia-texto h2 {
+        font-size: 1.5rem;
+    }
+    .guia-texto p {
+        font-size: 1rem;
+    }
+    .btn {
+        width: 100%;
+        max-width: 250px;
+    }
+}
