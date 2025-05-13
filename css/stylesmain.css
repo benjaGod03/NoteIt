@@ -1,4 +1,5 @@
 body {
+  user-select: none;
   margin: 0;
   padding: 0;
   background: linear-gradient(150deg, #f48fb1, #af7ac5, #d4ac0d);
@@ -8,58 +9,89 @@ body {
   height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden
 }
 
 @keyframes gradientShift {
-0% {
-  background-position: 0% 50%;
+  0% {
+    background-position: 0% 50%;
+  }
+
+  100% {
+    background-position: 100% 50%;
+  }
 }
-100% {
-  background-position: 100% 50%;
-}
-}
+
 .header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-padding: 20px 40px;
-background-color: rgba(255, 255, 255, 0.2);
-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-position: sticky;
-top: 0;
-z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  background-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  position: sticky;
+  top: 0;
+  width: 95%;
+  margin: 0 auto;
+  border-radius: 25px;
 }
+
 .logo h1 {
-font-size: 1.5rem;
-color: white;
-font-weight: bold;
+  color: white;
+  font-weight: bold;
+  margin: 0;
 }
+
 .logo {
-display: flex;
-align-items: center;
-gap: 10px;
-font-size: 2rem;
-color: white;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: white;
+
 }
 
 .logo-icon {
-width: 32px;
-height: 32px;
-object-fit: contain;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.perfil {
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  font-weight: bold;
+
+}
+
+.perfil:hover {
+  color: #e3d5f5;
+}
+
+.perfil-icon {
+  width: 32px;
+  height: 32px;
 }
 
 .wrapper {
-background-color: rgba(255, 255, 255, 0.8);
-width: 90%;
-margin: auto;
-padding: 20px;
-border-radius: 20px;
-box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-gap: 10px;
-flex: 1;
-overflow: auto;
+  flex: 1;
+  background-color: rgba(255, 255, 255, 0.8);
+  width: 90%;
+  margin: auto;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 10px;
+  overflow-y: auto;
+  max-height: calc(100vh - 100px);
+  min-height: 0;
 }
 
 /* boton para agregar nota */
@@ -90,6 +122,10 @@ overflow: auto;
   border-radius: 50%;
   font-size: 30px;
   margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #af7ac5;
 }
 
 /* Estilo de las notas */
@@ -97,9 +133,10 @@ overflow: auto;
   position: relative;
   max-width: 250px;
   max-height: 250px;
-  aspect-ratio: 1 / 1; /* hace que sean cuadradas */
+  aspect-ratio: 1 / 1;
+  /* hace que sean cuadradas */
   margin: 5%;
-  background-color: #fdf3b0; 
+  background-color: #fdf3b0;
   border-radius: 10px;
   padding: 20px;
   box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.15);
@@ -121,15 +158,29 @@ overflow: auto;
   color: #333;
   font-weight: bold;
   outline: none;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-clamp: 1;
+  overflow: hidden;
 }
 
 .note-content {
   margin-top: 10px;
   color: #444;
   outline: none;
-  white-space: pre-wrap;
 }
-/* borrar nota tachito*/ 
+
+.note-box .note-content {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+
+/* borrar nota tachito*/
 .delete-btn {
   position: absolute;
   top: 10px;
@@ -141,47 +192,84 @@ overflow: auto;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 30px;  
+  width: 30px;
   height: 30px;
-  border-radius: 50%;  
-  transition: background-color 0.3s ease, transform 0.2s ease;  
+  border-radius: 50%;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
+
 .delete-btn svg {
-  width: 100%;  
+  width: 100%;
   height: 100%;
   stroke: #a00;
   transition: stroke 0.3s ease, transform 0.2s ease;
 }
 
 .delete-btn:hover {
-  background-color: rgba(255, 0, 0, 0.1);  /* Fondo sutil al pasar el mouse */
-  transform: scale(1.1);  /* Agranda el botón al pasar el ratón */
+  background-color: rgba(255, 0, 0, 0.1);
+  /* Fondo sutil al pasar el mouse */
+  transform: scale(1.1);
+  /* Agranda el botón al pasar el ratón */
   stroke: #d00;
-  
+
 }
 
 
 .note-footer {
-  margin-top: auto; 
-  font-size: 0.9rem; 
-  color: #666; 
-  text-align: right; 
+  margin-top: auto;
+  font-size: 0.9rem;
+  color: #666;
+  text-align: right;
 
 }
+
 /*para hacerlo responsive*/
 /* Tablets y pantallas medianas */
 /* Media Queries para pantallas más pequeñas */
 @media (max-width: 768px) {
-.wrapper {
-    grid-template-columns: repeat(2, 1fr); /* Dos columnas en pantallas pequeñas */
-}
+  .wrapper {
+    grid-template-columns: repeat(2, 1fr);
+    /* Dos columnas en pantallas pequeñas */
+  }
 }
 
 @media (max-width: 480px) {
-.wrapper {
-    grid-template-columns: repeat(2, 1fr); /* Una columna en pantallas muy pequeñas */
+  .wrapper {
+    grid-template-columns: repeat(2, 1fr);
+    /* Una columna en pantallas muy pequeñas */
+  }
+
+  .note-box {
+    max-width: 130px;
+    max-height: 130px;
+    height: 130px;
+    padding: 10px;
+  }
+
+  .note-title {
+    font-size: 0.9rem;
+  }
+
+  .note-content {
+    font-size: 0.7rem;
+  }
+
+  .note-footer {
+    font-size: 0.55rem;
+  }
+
+  .add-box {
+    max-width: 130px;
+    max-height: 130px;
+  }
+
+  .add-box .icon {
+    height: 40px;
+    width: 40px;
+    font-size: 20px;
+  }
 }
-}
+
 /* fondo oscuro atras de la nota ampliada */
 .overlay {
   position: fixed;
@@ -198,11 +286,12 @@ overflow: auto;
 
 /* estilo de la nota ampliada */
 .ampliada {
+  user-select: text;
   background-color: #fff8dc;
   padding: 30px;
   width: 90%;
-  max-width: 500px;
-  max-height: 90%;
+  max-width: 900px;
+  max-height: 70%;
   overflow: auto;
   border-radius: 15px;
   box-shadow: 0 0 20px #000;
@@ -210,7 +299,8 @@ overflow: auto;
   animation: fadeIn 0.3s ease;
 }
 
-.ampliada h3, .ampliada p {
+.ampliada h3,
+.ampliada p {
   outline: none;
 }
 
@@ -227,8 +317,15 @@ overflow: auto;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .note-actions {
@@ -238,4 +335,76 @@ overflow: auto;
   margin-bottom: 5px;
 }
 
+.dragging {
+  opacity: 0.5;
+  transform: scale(0.98);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.perfil-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 90vh;
+  color: white;
+}
+
+.foto-perfil {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid white;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.foto-perfil:hover {
+  transform: scale(1.05);
+}
+
+.oculto {
+  display: none;
+}
+
+h2 {
+  margin-top: 20px;
+}
+
+#nombrePerfil {
+  cursor: text;
+  border: none;
+  outline: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background-color: rgba(255,255,255,0.2);
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+#nombrePerfil:focus {
+  background-color: rgba(255,255,255,0.4);
+}
+
+.btn-volver {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  background-color: #76448a;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  transition: background-color 0.2s;
+}
+
+.btn-volver:hover {
+  background-color: #5b3370;
+}
 
