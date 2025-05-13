@@ -83,3 +83,49 @@ function ampliarNota(notaOriginal) {
     
 }
 
+function inicializarPerfil() {
+// abrir selector de archivos cuando apretas el perfil
+const foto = document.getElementById('fotoPerfil');
+const input = document.getElementById('inputFoto');
+
+foto.addEventListener('click', () => input.click());
+
+input.addEventListener('change', () => {
+  const file = input.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      foto.src = e.target.result;
+      // guarda en localstorage para mantenerlo al recargar:
+      localStorage.setItem('fotoPerfil', e.target.result);
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+// por si ya hay una imagen guardada
+const guardada = localStorage.getItem('fotoPerfil');
+if (guardada) {
+  foto.src = guardada;
+}
+
+// muardar el nombre cuando se edita
+const nombre = document.getElementById('nombrePerfil');
+
+nombre.addEventListener('input', () => {
+    localStorage.setItem('nombreUsuario', nombre.textContent.trim());
+  });
+
+  // mostrar el nombre guardado
+  const nombreGuardado = localStorage.getItem('nombreUsuario');
+  if (nombreGuardado) {
+    nombre.textContent = nombreGuardado;
+  }
+  // boton volver atras
+  document.getElementById('btnVolver').addEventListener('click', () => {
+    window.location.href = 'main.html';
+  });
+ }
+ document.addEventListener('DOMContentLoaded', () => {
+    inicializarPerfil();
+});
