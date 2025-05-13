@@ -28,13 +28,16 @@ body {
     align-items: center;
     padding: 20px 40px;
     background-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
     position: sticky;
     top: 0;
     z-index: 1000;
+    width: 75%;
+    margin: 40px auto 0;
+    border-radius: 25px;
 }
   .logo h1 {
-    font-size: 2.2rem;
+    font-size: 2.0rem;
     color: white;
     font-weight: bold;
   }
