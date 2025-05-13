@@ -12,15 +12,25 @@
       <img src="images/iconoNoteIt.png" alt="Icono NoteIt" class="logo-icon">
       <h1>NoteIt</h1>
     </div>
+    <div class="perfil" onclick="window.location.href='profile.html'">
+      <span id="nombreUsuario">Mi perfil: "usuario"</span>
+      <svg class="perfil-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="#333" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="12" cy="8" r="4" />
+        <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
+      </svg>
+
+    </div>
   </header>
   <div class="wrapper" id="contenedor-notas"> <!-- solo le agregue un nombre más identificable -->
       <div class="add-box" onclick="agregarNota()">  <!-- sirve para el script de js -->
-        <div class="icon"><i class="uil uil-plus"></i></div>
+        <div class="icon">+</div>
         <p>Agregar nueva nota</p>
       </div>
   </div>
 
     <script src="jsMain.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
 
 
 </body>
