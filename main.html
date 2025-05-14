@@ -1,35 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NoteIt</title>
-    <link rel="stylesheet" href="css/stylesmain.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NoteIt</title>
+  <link rel="stylesheet" href="css/stylesmain.css">
 </head>
+
 <body>
   <header class="header">
     <div class="logo">
       <img src="images/iconoNoteIt.png" alt="Icono NoteIt" class="logo-icon">
       <h1>NoteIt</h1>
     </div>
-    <div class="perfil" onclick="window.location.href='profile.html'">
-      <span id="nombreUsuario">Mi perfil: "usuario"</span>
-      <svg class="perfil-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="#333" stroke-width="2" viewBox="0 0 24 24">
-        <circle cx="12" cy="8" r="4" />
-        <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
-      </svg>
-
-    </div>
   </header>
-  <div class="wrapper" id="contenedor-notas"> <!-- solo le agregue un nombre más identificable -->
-      <div class="add-box" onclick="agregarNota()">  <!-- sirve para el script de js -->
+  <!-- menú hamburguesa -->
+  <div class="menu-hamburguesa" id="btnMenu">☰</div>
+  <nav class="menu" id="menu">
+    <ul>
+      <li><a href="main.html">Inicio</a></li>
+      <li><a href="profile.html">Mi perfil</a></li>
+      <li><a href="#">Otra opción</a></li>
+    </ul>
+  </nav>
+
+  <!-- contenedor de notas individuales -->
+  <div id="notas-individuales" class="seccion-notas">
+    <div class="wrapper" id="contenedor-notas"> <!-- solo le agregue un nombre más identificable -->
+      <div class="add-box" onclick="agregarNota()"> <!-- sirve para el script de js -->
         <div class="icon">+</div>
         <p>Agregar nueva nota</p>
       </div>
+    </div>
   </div>
 
-    <script src="jsMain.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <!-- contenedor de notas grupales -->
+  <div id="notas-grupales" class="seccion-notas" style="display: none;">
+    <div class="mensaje-grupal">
+      <p>aca van las notas grupales o los grupos de notas o lo q sea</p>
+    </div>
+  </div>
+  <!-- pestañas para cambiar de seccion -->
+  <div class="seccion-selector">
+    <button onclick="mostrarSeccion('individual')" id="btn-individual" class="activo">Notas individuales</button>
+    <button onclick="mostrarSeccion('grupal')" id="btn-grupal">Notas grupales</button>
+  </div>
+
+  <script src="jsMain.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
 
 
