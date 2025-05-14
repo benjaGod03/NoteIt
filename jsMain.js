@@ -141,3 +141,31 @@ nombre.addEventListener('input', () => {
  document.addEventListener('DOMContentLoaded', () => {
     inicializarPerfil();
 });
+
+const btnMenu = document.getElementById('btnMenu');
+const menu = document.getElementById('menu');
+
+btnMenu.addEventListener('click', () => {
+  menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+});
+
+function mostrarSeccion(seccion) {
+  const individuales = document.getElementById('notas-individuales');
+  const grupales = document.getElementById('notas-grupales');
+  const btnInd = document.getElementById('btn-individual');
+  const btnGrp = document.getElementById('btn-grupal');
+
+  if (seccion === 'individual') {
+    individuales.style.display = 'block';
+    grupales.style.display = 'none';
+    btnInd.classList.add('activo');
+    btnGrp.classList.remove('activo');
+  } else {
+    individuales.style.display = 'none';
+    grupales.style.display = 'block';
+    btnGrp.classList.add('activo');
+    btnInd.classList.remove('activo');
+  }
+}
+
+
