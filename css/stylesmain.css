@@ -408,3 +408,78 @@ h2 {
   background-color: #5b3370;
 }
 
+.menu-hamburguesa {
+  font-size: 30px;
+  cursor: pointer;
+  padding: 10px;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 1000;
+}
+
+.menu {
+  position: absolute;
+  top: 60px;
+  right: 15px;
+  background: #f0f0f0;
+  padding: 12px;
+  border-radius: 10px;
+  display: none;
+  z-index: 999;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menu ul li {
+  margin: 8px 0;
+}
+
+.menu ul li a {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+}
+
+.seccion-selector {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+.seccion-selector button {
+  padding: 10px 20px;
+  background-color: #76448a;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.seccion-selector button:hover {
+  background-color: #5e3370;
+}
+
+.seccion-selector button.activo {
+  background-color: #4b2f5c;
+}
+
+.seccion-notas {
+  padding: 20px;
+}
+
+.mensaje-grupal {
+  background-color: #eee;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  color: #444;
+}
+
