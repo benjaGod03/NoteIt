@@ -1,3 +1,15 @@
+//libreria sortable es para mover las notas si encontras una forma mejor cambialo
+document.addEventListener("DOMContentLoaded", () => {
+    // lo inicia
+    new Sortable(document.getElementById('contenedor-notas'), {
+      animation: 150,
+      ghostClass: 'dragging',
+      draggable: '.note-box'
+    });
+  
+    
+  });
+
 function agregarNota() {
     const contenedor = document.getElementById('contenedor-notas');
     const nuevaNota = document.createElement('div'); //crea la nota nueva
