@@ -5,6 +5,7 @@ $dbname = 'b7_38669112_prueba'; // Cambia esto por el nombre de tu base de datos
 $username = 'b7_38669112'; // Cambia esto por tu usuario de la base de datos
 $password = 'tietoN777'; // Cambia esto por tu contraseña de la base de datos
 $error = '';
+session_start();
 try {
     // Crear una conexión a la base de datos usando PDO
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
@@ -34,7 +35,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($usuarioEncontrado) {
             // Verificar la contraseña
             if (password_verify($contrasena, $usuarioEncontrado['contrasena'])) {
-                header('Location: main.html'); // Redirigir a la página principal
+                // Guardar solo el nombre de usuario en la sesión
+                $_SESSION['usuario'] = $usuarioEncontrado['usuario'];
+                header('Location: main.php'); // Redirigir a la página principal
                 exit();
             } else {
                 $error = 'Contraseña incorrecta';
@@ -49,4 +52,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: login.html?error=' . urlencode($error));
         exit(); // Detener el script después de la redirección
     }
+include 'login.html';
 ?>
