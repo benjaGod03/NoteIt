@@ -13,7 +13,7 @@ try {
     die("Error al conectar con la base de datos: " . $e->getMessage());
 }
 
-// Verificar si se envió el formulario
+$error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Obtener los datos del formulario
     $usuario = $_POST['usuario'] ?? '';
@@ -24,11 +24,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Validar que los correos coincidan
     if ($correo !== $confirmarCorreo) {
-        echo 'Los correos electrónicos no coinciden.';
+        $error = 'Los correos electrónicos no coinciden.';
     } elseif ($contrasena !== $confirmarContrasena) {
-        echo 'Las contraseñas no coinciden.';
+        $error = 'Las contraseñas no coinciden.';
     } elseif (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
-        echo 'El correo electrónico no es válido.';
+        $error = 'El correo electrónico no es válido.';
     } else {
         // Verificar si el usuario ya existe en la base de datos
         $query = "SELECT COUNT(*) FROM datos WHERE usuario = :usuario";
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $usuarioExiste = $stmt->fetchColumn();
 
         if ($usuarioExiste) {
-            echo 'El nombre de usuario ya está en uso. Por favor, elija otro.';
+            $error = 'El nombre de usuario ya está en uso. Por favor, elija otro.';
         } else {
             // Cifrar la contraseña
             $contrasenaCifrada = password_hash($contrasena, PASSWORD_DEFAULT);
@@ -52,13 +52,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bindParam(':contrasena', $contrasenaCifrada);
 
             if ($stmt->execute()) {
-                echo 'Registro exitoso';
                 header('Location: index.html');
                 exit();
             } else {
-                echo 'Error al registrar el usuario.';
+                $error = 'Error al registrar el usuario.';
             }
         }
     }
+
+    if (!empty($error)) {
+        // Redirigir al formulario de registro con el mensaje de error en la URL
+        header('Location: registrarse.html?error=' . urlencode($error));
+        exit();
+    }
 }
-?>

@@ -33,9 +33,45 @@
             </div>
             <input type="submit" class="btn" value="Continuar">
         </form>
-
-
+        <div class="error-message" style="display: none; color: red;"></div>
     </div>
 </div>
+<script>
+    // Mostrar el mensaje de error desde la URL
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('DOMContentLoaded disparado: el DOM está completamente cargado.');
+
+        // Obtener los parámetros de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        console.log('Parámetros de la URL:', urlParams.toString());
+
+        // Obtener el valor del parámetro 'error' de la URL
+        const error = urlParams.get('error');
+        console.log('Mensaje de error obtenido:', error);
+
+        // Verificar si existe un mensaje de error
+        if (error) {
+            // Seleccionar el contenedor donde se mostrará el mensaje de error
+            const errorElement = document.querySelector('.error-message');
+            console.log('Contenedor de error encontrado:', errorElement);
+
+            // Si el contenedor existe
+            if (errorElement) {
+                // Decodificar el mensaje de error y asignarlo como texto del contenedor
+                errorElement.textContent = decodeURIComponent(error);
+                // Hacer visible el contenedor del mensaje de error
+                errorElement.style.display = 'block';
+
+                // Eliminar el parámetro 'error' de la URL
+                const newUrl = window.location.origin + window.location.pathname;
+                window.history.replaceState({}, document.title, newUrl);
+            } else {
+                console.error('El contenedor de error no existe en el DOM.');
+            }
+        } else {
+            console.log('No se encontró ningún mensaje de error en la URL.');
+        }
+    });
+</script>
 </body>
 </html>
