@@ -3,50 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicia sesion</title>
+    <title>Inicia sesión</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
     <div class="login-contenedor">
-    <div class="formulario">
-        <h1>Inicio de sesion</h1>
-        <form method="get" action="main.html">
-            <div class="form-group username">
-                <input type="text" id="username" placeholder=" " required>
-                <label for="username">Nombre de usuario</label>
-            </div>
-            <div class="form-group Contraseña">
-                <input type="password" id="password" placeholder=" " required>
-                <label for="password">Contraseña</label>
-                <button type="button" onclick="togglePassword()" class="toggle-pass">
-                    <svg id="eye-closed" class="eye-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
-                      <circle cx="12" cy="12" r="3"/>
-                      <line x1="3" y1="3" x2="21" y2="21"/>
-                    </svg>
-                    <svg id="eye-open" class="eye-icon hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
-                      <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                  </button>
-            </div>
-            <!--si queremos para recordar contraseña seria
-            <div class="recordad">¿Olvido su contraseña?</div>-->
-            <input type="submit" class="btn" value="Iniciar">
-        <div class="registrarse">
-          ¿No tienes cuenta? <a href="registrarse.html">registrarse</a>
+        <div class="formulario">
+            <h1>Inicio de sesión</h1>
+            <form method="POST" action="LoginPhp.php">
+                <div class="form-group username">
+                    <input type="text" id="username" name="usuario" placeholder=" " required>
+                    <label for="username">Nombre de usuario</label>
+                </div>
+                <div class="form-group Contraseña">
+                    <input type="password" id="password" name="contrasena" placeholder=" " required>
+                    <label for="password">Contraseña</label>
+                    <button type="button" onclick="togglePassword()" class="toggle-pass">
+                        <svg id="eye-closed" class="eye-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                            <line x1="3" y1="3" x2="21" y2="21"/>
+                        </svg>
+                        <svg id="eye-open" class="eye-icon hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
+                <input type="submit" class="btn" value="Iniciar">
+                <div class="error-message" style="color: red; text-align: center; margin-top: 10px; display:none;"></div>
+                <div class="registrarse">
+                    ¿No tienes cuenta? <a href="registrarse.html">Registrarse</a>
+                </div>
+            </form>
         </div>
-      </form>
     </div>
-  </div>
+    <script src="jsLogin.js"></script>
+    
+    
+    
+    
+    
+    
+    
+    <script>
+        // Mostrar el mensaje de error desde la URL
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOMContentLoaded disparado: el DOM está completamente cargado.');
 
-  <script src="jsLogin.js"></script>
+            // Obtener los parámetros de la URL
+            const urlParams = new URLSearchParams(window.location.search);
+            console.log('Parámetros de la URL:', urlParams.toString());
 
+            // Obtener el valor del parámetro 'error' de la URL
+            const error = urlParams.get('error');
+            console.log('Mensaje de error obtenido:', error);
 
+            // Verificar si existe un mensaje de error
+            if (error) {
+                // Seleccionar el contenedor donde se mostrará el mensaje de error
+                const errorElement = document.querySelector('.error-message');
+                console.log('Contenedor de error encontrado:', errorElement);
 
+                // Si el contenedor existe
+                if (errorElement) {
+                    // Decodificar el mensaje de error y asignarlo como texto del contenedor
+                    errorElement.textContent = decodeURIComponent(error);
+                    // Hacer visible el contenedor del mensaje de error
+                    errorElement.style.display = 'block';
 
-
-
+                    // Eliminar el parámetro 'error' de la URL
+                    const newUrl = window.location.origin + window.location.pathname;
+                    window.history.replaceState({}, document.title, newUrl);
+                } else {
+                    console.error('El contenedor de error no existe en el DOM.');
+                }
+            } else {
+                console.log('No se encontró ningún mensaje de error en la URL.');
+            }
+        });
+    </script>
 </body>
-
 </html>
+

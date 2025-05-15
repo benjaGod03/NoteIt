@@ -1,3 +1,5 @@
+console.log('El archivo jsLogin.js se ha cargado correctamente');
+
 //abrir y cerrar ojo
 function togglePassword() {
     const passwordInput = document.getElementById('password');
@@ -14,3 +16,6 @@ function togglePassword() {
         eyeOpen.classList.add('hidden');
     }
 }
+
+
+
