@@ -13,7 +13,7 @@ try {
     die("Error al conectar con la base de datos: " . $e->getMessage());
 }
 
-$error = '';
+// Verificar si se envió el formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Obtener los datos del formulario
     $usuario = $_POST['usuario'] ?? '';
@@ -22,8 +22,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $contrasena = $_POST['contrasena'] ?? '';
     $confirmarContrasena = $_POST['confirmar_contrasena'] ?? '';
 
-    // Validar que los correos coincidan
-    if ($correo !== $confirmarCorreo) {
+    $error = '';
+
+    // Validar que los campos no estén vacíos
+    if (empty($usuario) || empty($correo) || empty($confirmarCorreo) || empty($contrasena) || empty($confirmarContrasena)) {
+        $error = 'Por favor, complete todos los campos.';
+    } elseif ($correo !== $confirmarCorreo) {
         $error = 'Los correos electrónicos no coinciden.';
     } elseif ($contrasena !== $confirmarContrasena) {
         $error = 'Las contraseñas no coinciden.';
@@ -52,6 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bindParam(':contrasena', $contrasenaCifrada);
 
             if ($stmt->execute()) {
+                echo 'Registro exitoso';
                 header('Location: index.html');
                 exit();
             } else {
@@ -66,3 +71,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 }
+?>
