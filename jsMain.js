@@ -167,5 +167,3 @@ function mostrarSeccion(seccion) {
     btnInd.classList.remove('activo');
   }
 }
-
-
