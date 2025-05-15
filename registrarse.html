@@ -10,25 +10,25 @@
     <div class="login-contenedor">
     <div class="formulario">
         <h1>Nuevo Usuario</h1>
-        <form method="GET" action="index.php"> 
+        <form method="POST" action="Registro.php"> 
             <div class="form-group username">
-                <input type= "text" placeholder=" " required>
+                <input type="text" name="usuario" placeholder=" " required>
                 <label>Nombre de Usuario</label>
             </div>
             <div class="form-group Correo">
-                <input type="email" placeholder=" " required>
+                <input type="email" name="correo" placeholder=" " required>
                 <label>Correo electronico</label>
             </div>
             <div class="form-group RepetirCorreo">
-                <input type="Email" placeholder=" " required>
+                <input type="email" name="confirmar_correo" placeholder=" " required>
                 <label>Confirme el correo</label>
             </div>
             <div class="form-group contraseñaR">
-                <input type="passwordR" placeholder=" " required>
+                <input type="password" name="contrasena" placeholder=" " required>
                 <label>Contraseña</label>
             </div>
             <div class="form-group re-contraseña">
-                <input type="Repassword" placeholder=" " required>
+                <input type="password" name="confirmar_contrasena" placeholder=" " required>
                 <label>Confirme contraseña</label>
             </div>
             <input type="submit" class="btn" value="Continuar">
