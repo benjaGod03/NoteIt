@@ -71,4 +71,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 }
+include 'registrarse.html';
+// Cerrar la conexión a la base de datos
 ?>
