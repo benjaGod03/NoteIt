@@ -10,68 +10,32 @@
     <div class="login-contenedor">
     <div class="formulario">
         <h1>Nuevo Usuario</h1>
-        <form method="POST" action="Registro.php"> 
+        <form method="GET" action="index.php"> 
             <div class="form-group username">
-                <input type="text" name="usuario" placeholder=" " required>
+                <input type= "text" placeholder=" " required>
                 <label>Nombre de Usuario</label>
             </div>
             <div class="form-group Correo">
-                <input type="email" name="correo" placeholder=" " required>
+                <input type="email" placeholder=" " required>
                 <label>Correo electronico</label>
             </div>
             <div class="form-group RepetirCorreo">
-                <input type="email" name="confirmar_correo" placeholder=" " required>
+                <input type="Email" placeholder=" " required>
                 <label>Confirme el correo</label>
             </div>
             <div class="form-group contraseñaR">
-                <input type="password" name="contrasena" placeholder=" " required>
+                <input type="passwordR" placeholder=" " required>
                 <label>Contraseña</label>
             </div>
             <div class="form-group re-contraseña">
-                <input type="password" name="confirmar_contrasena" placeholder=" " required>
+                <input type="Repassword" placeholder=" " required>
                 <label>Confirme contraseña</label>
             </div>
             <input type="submit" class="btn" value="Continuar">
         </form>
-        <div class="error-message" style="display: none; color: red;"></div>
+
+
     </div>
 </div>
-<script>
-    // Mostrar el mensaje de error desde la URL
-    document.addEventListener('DOMContentLoaded', () => {
-        console.log('DOMContentLoaded disparado: el DOM está completamente cargado.');
-
-        // Obtener los parámetros de la URL
-        const urlParams = new URLSearchParams(window.location.search);
-        console.log('Parámetros de la URL:', urlParams.toString());
-
-        // Obtener el valor del parámetro 'error' de la URL
-        const error = urlParams.get('error');
-        console.log('Mensaje de error obtenido:', error);
-
-        // Verificar si existe un mensaje de error
-        if (error) {
-            // Seleccionar el contenedor donde se mostrará el mensaje de error
-            const errorElement = document.querySelector('.error-message');
-            console.log('Contenedor de error encontrado:', errorElement);
-
-            // Si el contenedor existe
-            if (errorElement) {
-                // Decodificar el mensaje de error y asignarlo como texto del contenedor
-                errorElement.textContent = decodeURIComponent(error);
-                // Hacer visible el contenedor del mensaje de error
-                errorElement.style.display = 'block';
-
-                // Eliminar el parámetro 'error' de la URL
-                const newUrl = window.location.origin + window.location.pathname;
-                window.history.replaceState({}, document.title, newUrl);
-            } else {
-                console.error('El contenedor de error no existe en el DOM.');
-            }
-        } else {
-            console.log('No se encontró ningún mensaje de error en la URL.');
-        }
-    });
-</script>
 </body>
 </html>
