@@ -302,3 +302,88 @@ function mostrarSeccion(seccion) {
     btnInd.classList.remove('activo');
   }
 }
+
+function agregargrupo() {
+  const modal = document.getElementById('modal');
+  const input = document.getElementById('nombreGrupoInput');
+  modal.style.display = 'flex';
+  input.value = '';
+  input.focus();
+}
+
+document.getElementById('btnCrearGrupo').addEventListener('click', () => {
+  const nombre = document.getElementById('nombreGrupoInput').value.trim();
+  const contenedor = document.getElementById('contenedor-grupos');
+  if (nombre === '') {
+    alert('Por favor, ingresa un nombre');
+    return;
+  }
+//crear grupo
+  const grupo = document.createElement('div');
+  grupo.className = 'add-box grupo-creado';
+  grupo.onclick = () => {
+    mostrarVistaGrupo(nombre);
+  };
+  grupo.innerHTML = `
+  <div class="icon">📁</div>
+  <p>${nombre}</p>
+`;
+  contenedor.appendChild(grupo);
+
+
+  // Cerrar modal
+  document.getElementById('modal').style.display = 'none';
+
+});
+
+// Cerrar el modal al hacer clic fuera del contenido
+window.addEventListener('click', (e) => {
+  if (e.target.id === 'modal') {
+    document.getElementById('modal').style.display = 'none';
+  }
+});
+
+function mostrarVistaGrupo(nombreGrupo) {
+  // ocultar otras secciones
+  document.getElementById('notas-grupales').style.display = 'none';
+  document.getElementById('vista-grupo').style.display = 'block';
+
+  // mostrar el nombre del grupo
+  document.getElementById('nombre-del-grupo').innerText = nombreGrupo;
+}
+
+function volverAGrupos() {
+  document.getElementById('vista-grupo').style.display = 'none';
+  document.getElementById('notas-grupales').style.display = 'block';
+}
+
+function agregarNotaAGrupo() {
+  const contenedor = document.getElementById('contenedor-notas-grupo');
+  const nuevaNota = document.createElement('div');
+  nuevaNota.classList.add('note-box');
+
+  const fechaHora = new Date();
+  const fechaHoraTexto = fechaHora.toLocaleString();
+
+  nuevaNota.innerHTML = `
+        <h3 class="note-title">Título de nota</h3>
+        <p class="note-content">Texto grupal :)</p>
+        <div class="note-footer">
+          <span class="note-date">${fechaHoraTexto}</span>
+          <button class="delete-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#76448a" stroke-width="2">
+              <path d="M3 6h18M5 6l1 16h12l1-16H5z" />
+              <path d="M10 11v6M14 11v6" />
+              <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+            </svg>
+          </button>
+        </div>
+    `;
+
+  nuevaNota.querySelector('.delete-btn').addEventListener('click', function (e) {
+    e.stopPropagation();
+    nuevaNota.remove();
+  });
+
+  contenedor.appendChild(nuevaNota);
+}
