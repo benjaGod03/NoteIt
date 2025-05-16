@@ -15,10 +15,11 @@
     <div class="perfil-container">
         <input type="file" id="inputFoto" class="oculto" accept="image/*">
         <img src="images/descarga.svg" alt="Foto de perfil" class="foto-perfil" id="fotoPerfil">
-        <h2 id="nombrePerfil"><?php echo isset($usuario) ? htmlspecialchars($usuario) : ''; ?></h2>
+        <h2 contenteditable="true" id="nombrePerfil">nombre de perfil</h2>
     </div>
 
     <script src="jsMain.js"></script>
 
 </body>
+
 </html>
