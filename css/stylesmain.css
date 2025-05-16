@@ -3,13 +3,13 @@ body {
   margin: 0;
   padding: 0;
   background: linear-gradient(150deg, #f48fb1, #af7ac5, #d4ac0d);
-  background-size: 200% 200%;
+  background-size: 250% 250%;
   font-family: 'Poppins', sans-serif;
-  animation: gradientShift 10s ease-in-out infinite alternate;
-  height: 100vw;
+  animation: gradientShift 10s ease-in-out infinite alternate-reverse;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  
   overflow-x: hidden;
 }
 
@@ -80,20 +80,17 @@ body {
 }
 /*el cuadrado blanco*/
 .wrapper {
-  flex: 1;
-  background-color: rgba(255, 255, 255, 0.8);
-  width: 90%;
-  margin: auto;
-  padding: 20px;
-  border-radius: 20px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 10px;
-  overflow-y: auto;
+  gap: 1px;
+  width: 90%;
+  margin: auto;
+  padding: 10px;
   height: 480px;
-  max-height: calc(100vw - 100px);
-  min-height: 0;
+  overflow-y: auto;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
 /* boton para agregar nota */
@@ -421,7 +418,7 @@ h2 {
 }
 
 .seccion-selector button {
-  padding: 10px 20px;
+  padding: 10px 10px;
   background-color: #76448a;
   color: white;
   border: none;
@@ -458,10 +455,17 @@ h2 {
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
+  .body{
+    background-size: cover;
+   
+    overflow-x: hidden;
+  }
   .wrapper {
-    width: 100vw;
-    max-width: 100vw;
+    min-height: calc(100vh - 200px);
+    width: 95%;
+    max-width: 100%;
+    margin: 10px 10px;
     overflow-x: hidden;
     padding: 10px; 
     display: grid;
@@ -470,18 +474,17 @@ h2 {
   }
 
   .note-box {
-    max-width: 130px;
-    max-height: 130px;
-    height: 130px;
+    max-width: 105px;
+    max-height: 105px;
     padding: 10px;
   }
 
   .note-title {
-    font-size: 0.9rem;
+    font-size: 0.7rem;
   }
 
   .note-content {
-    font-size: 0.7rem;
+    font-size: 0.6rem;
   }
 
   .note-footer {
@@ -489,13 +492,21 @@ h2 {
   }
 
   .add-box {
-    max-width: 130px;
-    max-height: 130px;
+    max-width: 85px;
+    max-height: 85px;
+    font-size: 10px;
   }
 
   .add-box .icon {
-    height: 40px;
-    width: 40px;
+    height: 30px;
+    width: 30px;
     font-size: 20px;
   }
+}
+html {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  width: 100%;
+  height: 100%;
 }
