@@ -125,6 +125,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
     echo json_encode($response);
     exit();
 }
-
 include 'main.html';
 
