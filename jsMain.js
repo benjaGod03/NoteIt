@@ -4,7 +4,11 @@ document.addEventListener("DOMContentLoaded", () => {
     new Sortable(document.getElementById('contenedor-notas'), {
       animation: 150,
       ghostClass: 'dragging',
-      draggable: '.note-box'
+      draggable: '.note-box',
+      filter: '.delete-btn',
+      preventOnFilter: false, // permite que el click en delete-btn funcione normalmente
+      delay: 150, // milisegundos antes de activar el drag en touch
+      delayOnTouchOnly: true // solo aplica el delay en dispositivos táctiles
     });
 
     // Cargar notas del usuario al iniciar
