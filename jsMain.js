@@ -256,18 +256,6 @@ if (guardada) {
   foto.src = guardada;
 }
 
-// muardar el nombre cuando se edita
-const nombre = document.getElementById('nombrePerfil');
-
-nombre.addEventListener('input', () => {
-    localStorage.setItem('nombreUsuario', nombre.textContent.trim());
-  });
-
-  // mostrar el nombre guardado
-  const nombreGuardado = localStorage.getItem('nombreUsuario');
-  if (nombreGuardado) {
-    nombre.textContent = nombreGuardado;
-  }
   // boton volver atras
   document.getElementById('btnVolver').addEventListener('click', () => {
     window.location.href = 'main.html';
