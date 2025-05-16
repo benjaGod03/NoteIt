@@ -113,6 +113,14 @@ function agregarNota() {
         e.stopPropagation(); // esto por ahora no anda, va a servir en un futuro para ampliar la nota y que no se rompa nada
         // Eliminar de la base de datos
         const uuid = nuevaNota.getAttribute('data-uuid');
+        // Si la nota no tiene título ni contenido (nota vacía y no guardada)
+        const titulo = nuevaNota.querySelector('.note-title').innerText.trim();
+        const contenido = nuevaNota.querySelector('.note-content').innerText.trim();
+        if ((!titulo || titulo === 'Título de nota') && (!contenido || contenido === 'Agregar texto :)')) {
+            // Nota vacía, simplemente eliminar del DOM
+            nuevaNota.remove();
+            return;
+        }
         if (uuid) {
             fetch('main.php', {
                 method: 'POST',
