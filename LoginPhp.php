@@ -54,7 +54,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Si llegó aquí, fue login exitoso y ya redirigió a main.php
     exit();
 }
-
-// Si es GET, redirigir siempre a login.html (nunca incluir ni renderizar login.html aquí)
+// Si es GET, mostrar el formulario de login (manteniendo la sesión activa)
 include 'login.html';
-?>
