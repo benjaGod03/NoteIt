@@ -1,0 +1,512 @@
+body {
+  user-select: none;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(150deg, #f48fb1, #af7ac5, #d4ac0d);
+  background-size: 250% 250%;
+  font-family: 'Poppins', sans-serif;
+  animation: gradientShift 10s ease-in-out infinite alternate-reverse;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  
+  overflow-x: hidden;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  background-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  position: sticky;
+  top: 0;
+  width: 100%;
+  margin: 0 auto;
+  border-radius: 25px;
+}
+
+.logo h1 {
+  color: white;
+  font-weight: bold;
+  margin: 0;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: white;
+
+}
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.perfil {
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  font-weight: bold;
+
+}
+
+.perfil:hover {
+  color: #e3d5f5;
+}
+
+.perfil-icon {
+  width: 32px;
+  height: 32px;
+}
+/*el cuadrado blanco*/
+.wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1px;
+  width: 90%;
+  margin: auto;
+  padding: 10px;
+  height: 480px;
+  overflow-y: auto;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+/* boton para agregar nota */
+.add-box {
+  width: 150px;
+  height: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 5%;
+  padding: 15px;
+  background: rgba(240, 240, 240, 0.8);
+  border: 2px dashed #999;
+  border-radius: 10px;
+  color: #666;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background-color 0.3s ease;
+}
+
+.add-box:hover {
+  background-color: #e0e0e0;
+}
+
+.add-box .icon {
+  height: 60px;
+  width: 60px;
+  border: 2px dashed #af7ac5;
+  border-radius: 50%;
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #af7ac5;
+}
+
+/* Estilo de las notas */
+.note-box {
+  position: relative;
+  max-width: 150px;
+  max-height: 150px;
+  aspect-ratio: 1 / 1;
+  /* hace que sean cuadradas */
+  margin: 5%;
+  background-color: #fdf3b0;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.note-box:hover {
+  transform: translateY(-4px);
+}
+
+.note-title {
+  margin: 0;
+  font-size: 1rem;
+  color: #333;
+  font-weight: bold;
+  outline: none;
+  display: -webkit-box; /*para limitar el texto que se muestra*/
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-clamp: 1;
+  overflow: hidden;
+}
+
+.note-content {
+  font-size: 0.9rem;
+  margin-top: 10px;
+  color: #444;
+  outline: none;
+}
+/*parche para q no muestre de mas*/
+.note-box .note-content {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+
+/* borrar nota tachito*/
+.delete-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  padding: 5px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.delete-btn svg {
+  width: 100%;
+  height: 100%;
+  stroke: #a00;
+  transition: stroke 0.3s ease, transform 0.2s ease;
+}
+
+.delete-btn:hover {
+  background-color: rgba(255, 0, 0, 0.1);
+  /* Fondo sutil al pasar el mouse */
+  transform: scale(1.1);
+  /* Agranda el botón al pasar el ratón */
+  stroke: #d00;
+
+}
+
+
+.note-footer {
+  margin-top: auto;
+  font-size: 0.9rem;
+  color: #666;
+  text-align: right;
+
+}
+
+/* fondo oscuro atras de la nota ampliada */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+/* estilo de la nota ampliada */
+.ampliada {
+  user-select: text;
+  background-color: #fff8dc;
+  padding: 30px;
+  width: 90%;
+  max-width: 900px;
+  max-height: 70%;
+  overflow: auto;
+  border-radius: 15px;
+  box-shadow: 0 0 20px #000;
+  position: relative;
+  animation: fadeIn 0.3s ease;
+}
+
+.ampliada h3,
+.ampliada p {
+  outline: none;
+}
+
+/* el boton q cierra la nota ampliada */
+.cerrar-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #a00;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.note-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.dragging {
+  opacity: 0.5;
+  transform: scale(0.98);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.perfil-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 90vh;
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 20px;
+  backdrop-filter: blur(10px);
+  background: rgba(240, 209, 240, 0.486); 
+  border: 1px solid rgba(255, 255, 255, 0.3); /* Borde tipo glass */
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  padding: 0 10px;
+}
+
+.foto-perfil {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #4b2f5c;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.foto-perfil:hover {
+  transform: scale(1.05);
+}
+
+.oculto {
+  display: none;
+}
+
+h2 {
+  margin-top: 20px;
+}
+
+#nombrePerfil {
+  cursor: text;
+  border: none;
+  outline: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background-color: rgba(255,255,255,0.2);
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+#nombrePerfil:focus {
+  background-color: rgba(255,255,255,0.4);
+}
+
+.btn-volver {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  background-color: #76448a;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  transition: background-color 0.2s;
+}
+
+.btn-volver:hover {
+  background-color: #5b3370;
+}
+
+.menu-hamburguesa {
+  font-size: 30px;
+  cursor: pointer;
+  padding: 10px;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 1000;
+}
+
+.menu {
+  position: absolute;
+  top: 60px;
+  right: 15px;
+  background: #f0f0f0;
+  padding: 12px;
+  border-radius: 10px;
+  display: none;
+  z-index: 999;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menu ul li {
+  margin: 8px 0;
+}
+
+.menu ul li a {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+}
+
+.seccion-selector {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.seccion-selector button {
+  padding: 10px 10px;
+  background-color: #76448a;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.seccion-selector button:hover {
+  background-color: #5e3370;
+}
+
+.seccion-selector button.activo {
+  background-color: #4b2f5c;
+}
+
+.seccion-notas {
+  padding: 20px;
+}
+
+.mensaje-grupal {
+  background-color: #eee;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  color: #444;
+}
+/*para hacerlo responsive*/
+/* Tablets y pantallas medianas */
+@media (max-width: 768px) {
+  .wrapper {
+    grid-template-columns: repeat(2, 1fr);
+    /* Dos columnas en pantallas pequeñas */
+  }
+}
+
+@media (max-width: 600px) {
+  .body{
+    background-size: cover;
+   
+    overflow-x: hidden;
+  }
+  .wrapper {
+    min-height: calc(100vh - 200px);
+    width: 95%;
+    max-width: 100%;
+    margin: 10px 10px;
+    overflow-x: hidden;
+    padding: 10px; 
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    box-sizing: border-box;
+  }
+
+  .note-box {
+    max-width: 105px;
+    max-height: 105px;
+    padding: 10px;
+  }
+
+  .note-title {
+    font-size: 0.7rem;
+  }
+
+  .note-content {
+    font-size: 0.6rem;
+  }
+
+  .note-footer {
+    font-size: 0.55rem;
+  }
+
+  .add-box {
+    max-width: 85px;
+    max-height: 85px;
+    font-size: 10px;
+  }
+
+  .add-box .icon {
+    height: 30px;
+    width: 30px;
+    font-size: 20px;
+  }
+}
+html {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  width: 100%;
+  height: 100%;
+}
