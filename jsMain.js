@@ -382,3 +382,56 @@ function agregarNotaAGrupo() {
 
   contenedor.appendChild(nuevaNota);
 }
+
+// Mostrar el modal perfil
+function abrirModalPerfil() {
+  document.getElementById('modalPerfil').classList.remove('oculto');
+}
+
+// Cerrar el modal perfil
+function cerrarModalPerfil() {
+  document.getElementById('modalPerfil').classList.add('oculto');
+}
+
+// Click en la imagen para cambiarla
+document.addEventListener('DOMContentLoaded', function () {
+  const foto = document.getElementById('fotoPerfil');
+  const input = document.getElementById('inputFoto');
+
+  if (foto && input) {
+    foto.addEventListener('click', () => input.click());
+
+    input.addEventListener('change', function () {
+      const archivo = this.files[0];
+      if (archivo) {
+        const lector = new FileReader();
+        lector.onload = function (e) {
+          foto.src = e.target.result;
+        };
+        lector.readAsDataURL(archivo);
+      }
+    });
+  }
+});
+
+function agregarAmigoAGrupo() {
+  document.getElementById('modalAgregarAmigo').classList.remove('oculto');
+}
+
+function cerrarModalAgregarAmigo() {
+  document.getElementById('modalAgregarAmigo').classList.add('oculto');
+}
+
+function buscarUsuario() {
+  const input = document.getElementById('buscadorUsuario').value.trim();
+  const mensaje = document.getElementById('mensajeBusqueda');
+
+  if (input === '') {
+    mensaje.textContent = 'Ingresá un nombre de usuario.';
+  } else {
+    
+    mensaje.textContent = 'Usuario no encontrado';
+  }
+}
+
+
