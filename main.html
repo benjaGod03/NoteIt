@@ -59,15 +59,11 @@
   </div>
 
   <!-- modal para crear grupo -->
-  <div id="modal"
-    style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); justify-content: center; align-items: center;">
-    <div id="modalContent" style="background: white; padding: 20px; border-radius: 10px; width: 300px;">
+  <div id="modalGrupo" class="modal modalGrupo oculto">
+    <div id="modalContentGrupo" class="modal-contenido">
       <h3>Nuevo Grupo</h3>
-      <input type="text" id="nombreGrupoInput" placeholder="Nombre del grupo"
-        style="width: 100%; padding: 10px; margin-top: 10px; margin-bottom: 20px;" />
-      <button id="btnCrearGrupo"
-        style="padding: 10px 15px; background: #4f46e5; color: white; border: none; border-radius: 6px; cursor: pointer;">Crear
-        grupo</button>
+      <input type="text" id="nombreGrupoInput" placeholder="Nombre del grupo" />
+      <button id="btnCrearGrupo">Crear grupo</button>
     </div>
   </div>
   <!-- pestañas para cambiar de seccion -->
@@ -78,6 +74,30 @@
 
   <script src="jsMain.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+  <!-- Modal de perfil -->
+  <div id="modalPerfil" class="modal oculto">
+    <div class="modal-contenido">
+      <span class="cerrar-modal" onclick="cerrarModalPerfil()">×</span>
+      <div class="perfil-container">
+        <input type="file" id="inputFoto" class="oculto" accept="image/*">
+        <img src="images/default-user.png" alt="Foto de perfil" class="foto-perfil" id="fotoPerfil">
+        <h2 contenteditable="true" id="nombrePerfil">nombre de perfil</h2>
+      </div>
+    </div>
+  </div>
+  <!-- Modal para agregar amigo -->
+  <div id="modalAgregarAmigo" class="modal oculto">
+    <div class="modal-contenido">
+      <span class="cerrar-modal" onclick="cerrarModalAgregarAmigo()">×</span>
+      <h3>Agregar amigo al grupo</h3>
+      <input type="text" id="buscadorUsuario" placeholder="Buscar usuario..."
+        style="width: 100%; padding: 10px; margin-top: 15px;">
+      <button onclick="buscarUsuario()"
+        style="margin-top: 10px; padding: 10px 15px; background: #4f46e5; color: white; border: none; border-radius: 6px; cursor: pointer;">Buscar</button>
+      <p id="mensajeBusqueda" style="margin-top: 15px; color: red;"></p>
+    </div>
+  </div>
 
 
 
