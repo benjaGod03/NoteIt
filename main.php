@@ -10,21 +10,21 @@ date_default_timezone_set('America/Argentina/Buenos_Aires');
 
 // Eliminar nota si se recibe por POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'eliminar') {
-    $usuario = $_SESSION['usuario'] ?? '';
+    $correo = $_SESSION['correo'] ?? '';
     $uuid = $_POST['uuid'] ?? '';
     $response = ['success' => false, 'message' => ''];
-    if (empty($usuario) || empty($uuid)) {
-        $response['message'] = 'Usuario y uuid son obligatorios.';
+    if (empty($correo) || empty($uuid)) {
+        $response['message'] = 'Correo y uuid son obligatorios.';
     } else {
         try {
             $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             // Establecer zona horaria de MySQL a GMT-3 (Argentina)
             $pdo->exec("SET time_zone = '-03:00'");
-            $query = "DELETE FROM notas WHERE uuid = :uuid AND usuario = :usuario";
+            $query = "DELETE FROM notas WHERE uuid = :uuid AND correo = :correo";
             $stmt = $pdo->prepare($query);
             $stmt->bindParam(':uuid', $uuid);
-            $stmt->bindParam(':usuario', $usuario);
+            $stmt->bindParam(':correo', $correo);
             $stmt->execute();
             if ($stmt->rowCount() > 0) {
                 $response['success'] = true;
@@ -45,45 +45,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && (!isset($_POST['accion']) || $_POST['accion'] !== 'eliminar')) {
     $titulo = $_POST['titulo'] ?? '';
     $contenido = $_POST['contenido'] ?? '';
-    $usuario = $_SESSION['usuario']?? '';
+    $correo = $_SESSION['correo'] ?? '';
     $uuid = $_POST['uuid'] ?? '';
     $response = ['success' => false, 'message' => ''];
 
-    if (empty($titulo) || empty($contenido) || empty($usuario) || empty($uuid)) {
-        $response['message'] = 'Título, contenido, usuario y uuid son obligatorios.';
+    if (empty($titulo) || empty($contenido) || empty($correo) || empty($uuid)) {
+        $response['message'] = 'Título, contenido, correo y uuid son obligatorios.';
     } else {
         try {
             $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             // Establecer zona horaria de MySQL a GMT-3 (Argentina)
             $pdo->exec("SET time_zone = '-03:00'");
-            // Verificar si ya existe una nota con ese uuid y usuario
-            $queryCheck = "SELECT COUNT(*) as existe FROM notas WHERE uuid = :uuid AND usuario = :usuario";
+            // Verificar si ya existe una nota con ese uuid y correo
+            $queryCheck = "SELECT COUNT(*) as existe FROM notas WHERE uuid = :uuid AND correo = :correo";
             $stmtCheck = $pdo->prepare($queryCheck);
             $stmtCheck->bindParam(':uuid', $uuid);
-            $stmtCheck->bindParam(':usuario', $usuario);
+            $stmtCheck->bindParam(':correo', $correo);
             $stmtCheck->execute();
             $rowCheck = $stmtCheck->fetch(PDO::FETCH_ASSOC);
             if ($rowCheck && $rowCheck['existe'] > 0) {
                 // Si existe, actualizar la nota y la fecha
-                $query = "UPDATE notas SET titulo = :titulo, contenido = :contenido, fecha = NOW() WHERE uuid = :uuid AND usuario = :usuario";
+                $query = "UPDATE notas SET titulo = :titulo, contenido = :contenido, fecha = NOW() WHERE uuid = :uuid AND correo = :correo";
                 $stmt = $pdo->prepare($query);
                 $stmt->bindParam(':titulo', $titulo);
                 $stmt->bindParam(':contenido', $contenido);
                 $stmt->bindParam(':uuid', $uuid);
-                $stmt->bindParam(':usuario', $usuario);
+                $stmt->bindParam(':correo', $correo);
                 $stmt->execute();
                 $response['success'] = true;
                 $response['message'] = 'Nota actualizada correctamente.';
                 $response['uuid'] = $uuid;
             } else {
                 // Si no existe, insertar la nueva nota
-                $query = "INSERT INTO notas (uuid, titulo, contenido, usuario) VALUES (:uuid, :titulo, :contenido, :usuario)";
+                $query = "INSERT INTO notas (uuid, titulo, contenido, correo) VALUES (:uuid, :titulo, :contenido, :correo)";
                 $stmt = $pdo->prepare($query);
                 $stmt->bindParam(':uuid', $uuid);
                 $stmt->bindParam(':titulo', $titulo);
                 $stmt->bindParam(':contenido', $contenido);
-                $stmt->bindParam(':usuario', $usuario);
+                $stmt->bindParam(':correo', $correo);
                 $stmt->execute();
                 $response['success'] = true;
                 $response['message'] = 'Nota guardada correctamente.';
@@ -100,9 +100,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (!isset($_POST['accion']) || $_POST
 
 // Mostrar notas del usuario conectado
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'listar') {
-    $usuario = $_SESSION['usuario'] ?? '';
+    $correo = $_SESSION['correo'] ?? '';
     $response = ['success' => false, 'notas' => [], 'message' => ''];
-    if (empty($usuario)) {
+    if (empty($correo)) {
         $response['message'] = 'Usuario no autenticado.';
     } else {
         try {
@@ -110,9 +110,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             // Establecer zona horaria de MySQL a GMT-3 (Argentina)
             $pdo->exec("SET time_zone = '-03:00'");
-            $query = "SELECT uuid, titulo, contenido, fecha FROM notas WHERE usuario = :usuario ORDER BY fecha DESC";
+            $query = "SELECT uuid, titulo, contenido, fecha FROM notas WHERE correo = :correo ORDER BY fecha DESC";
             $stmt = $pdo->prepare($query);
-            $stmt->bindParam(':usuario', $usuario);
+            $stmt->bindParam(':correo', $correo);
             $stmt->execute();
             $notas = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $response['success'] = true;

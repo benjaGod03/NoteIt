@@ -37,6 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (password_verify($contrasena, $usuarioEncontrado['contrasena'])) {
                 // Guardar solo el nombre de usuario en la sesión
                 $_SESSION['usuario'] = $usuarioEncontrado['usuario'];
+                $_SESSION['correo'] = $usuarioEncontrado['correo']; // Guardar el correo en la sesión
                 header('Location: main.php'); // Redirigir a la página principal
                 exit();
             } else {

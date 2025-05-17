@@ -42,8 +42,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $usuarioExiste = $stmt->fetchColumn();
 
+        // Verificar si el correo ya existe en la base de datos
+        $queryCorreo = "SELECT COUNT(*) FROM datos WHERE correo = :correo";
+        $stmtCorreo = $pdo->prepare($queryCorreo);
+        $stmtCorreo->bindParam(':correo', $correo);
+        $stmtCorreo->execute();
+        $correoExiste = $stmtCorreo->fetchColumn();
+
         if ($usuarioExiste) {
             $error = 'El nombre de usuario ya está en uso. Por favor, elija otro.';
+        } elseif ($correoExiste) {
+            $error = 'El correo electrónico ya está registrado. Por favor, use otro.';
         } else {
             // Cifrar la contraseña
             $contrasenaCifrada = password_hash($contrasena, PASSWORD_DEFAULT);
