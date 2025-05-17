@@ -187,41 +187,44 @@ function ampliarNota(notaOriginal) {
     cerrarBtn.className = 'cerrar-btn';
     cerrarBtn.innerHTML = '✖';
     cerrarBtn.onclick = () => {
-        // guardar cambios en la original
         const nuevoTitulo = titulo.innerText;
         const nuevoContenido = contenido.innerText;
-        notaOriginal.querySelector('.note-title').innerText = nuevoTitulo;
-        notaOriginal.querySelector('.note-content').innerText = nuevoContenido;
-        overlay.remove();
-        // Enviar los datos al backend, incluyendo uuid si existe
-        let body = `titulo=${encodeURIComponent(nuevoTitulo)}&contenido=${encodeURIComponent(nuevoContenido)}`;
-        if (notaUuid) {
-            body += `&uuid=${encodeURIComponent(notaUuid)}`;
-        }
-        fetch('main.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                console.log('Nota guardada correctamente');
-                // Si el backend devuelve el uuid, actualizar el data-uuid
-                if (data.uuid) {
-                    notaOriginal.setAttribute('data-uuid', data.uuid);
-                }
-                // Actualizar la fecha local en la nota
-                const fechaSpan = notaOriginal.querySelector('.note-date');
-                if (fechaSpan) {
-                    const ahora = new Date();
-                    fechaSpan.textContent = ahora.toLocaleString();
-                }
-            } else {
-                alert('Error: ' + data.message);
+        const tituloOriginal = notaOriginal.querySelector('.note-title').innerText;
+        const contenidoOriginal = notaOriginal.querySelector('.note-content').innerText;
+        // Solo guardar si hay cambios
+        if (nuevoTitulo !== tituloOriginal || nuevoContenido !== contenidoOriginal) {
+            notaOriginal.querySelector('.note-title').innerText = nuevoTitulo;
+            notaOriginal.querySelector('.note-content').innerText = nuevoContenido;
+            // Enviar los datos al backend, incluyendo uuid si existe
+            let body = `titulo=${encodeURIComponent(nuevoTitulo)}&contenido=${encodeURIComponent(nuevoContenido)}`;
+            if (notaUuid) {
+                body += `&uuid=${encodeURIComponent(notaUuid)}`;
             }
-        })
-        .catch(() => alert('Error al conectar con el servidor.'));
+            fetch('main.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // Si el backend devuelve el uuid, actualizar el data-uuid
+                    if (data.uuid) {
+                        notaOriginal.setAttribute('data-uuid', data.uuid);
+                    }
+                    // Actualizar la fecha local en la nota
+                    const fechaSpan = notaOriginal.querySelector('.note-date');
+                    if (fechaSpan) {
+                        const ahora = new Date();
+                        fechaSpan.textContent = ahora.toLocaleString();
+                    }
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(() => alert('Error al conectar con el servidor.'));
+        }
+        overlay.remove();
     };
 
     // agregar todo
