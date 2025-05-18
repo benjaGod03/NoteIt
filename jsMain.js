@@ -1,41 +1,41 @@
 //libreria sortable es para mover las notas si encontras una forma mejor cambialo
 document.addEventListener("DOMContentLoaded", () => {
-    // lo inicia
-    new Sortable(document.getElementById('contenedor-notas'), {
-      animation: 150,
-      ghostClass: 'dragging',
-      draggable: '.note-box',
-      filter: '.delete-btn',
-      preventOnFilter: false, // permite que el click en delete-btn funcione normalmente
-      delay: 150, // milisegundos antes de activar el drag en touch
-      delayOnTouchOnly: true // solo aplica el delay en dispositivos táctiles
-    });
+  // lo inicia
+  new Sortable(document.getElementById('contenedor-notas'), {
+    animation: 150,
+    ghostClass: 'dragging',
+    draggable: '.note-box',
+    filter: '.delete-btn',
+    preventOnFilter: false, // permite que el click en delete-btn funcione normalmente
+    delay: 150, // milisegundos antes de activar el drag en touch
+    delayOnTouchOnly: true // solo aplica el delay en dispositivos táctiles
+  });
 
-    // Cargar notas del usuario al iniciar
-    fetch('main.php?action=listar')
-      .then(res => res.json())
-      .then(data => {
-        if (data.success && Array.isArray(data.notas)) {
-          mostrarNotasDesdeBackend(data.notas);
-        } else {
-          console.error('No se pudieron cargar las notas:', data.message);
-        }
-      })
-      .catch(err => console.error('Error al obtener notas:', err));
+  // Cargar notas del usuario al iniciar
+  fetch('main.php?action=listar')
+    .then(res => res.json())
+    .then(data => {
+      if (data.success && Array.isArray(data.notas)) {
+        mostrarNotasDesdeBackend(data.notas);
+      } else {
+        console.error('No se pudieron cargar las notas:', data.message);
+      }
+    })
+    .catch(err => console.error('Error al obtener notas:', err));
 });
 
 function mostrarNotasDesdeBackend(notas) {
-    const contenedor = document.getElementById('contenedor-notas');
-    if (!contenedor) return;
-    // Elimina notas existentes (excepto el add-box)
-    contenedor.querySelectorAll('.note-box').forEach(nota => nota.remove());
-    notas.forEach(nota => {
-        const nuevaNota = document.createElement('div');
-        nuevaNota.classList.add('note-box');
-        nuevaNota.setAttribute('data-uuid', nota.uuid);
-        // Solo una columna de fecha
-        let fechaTexto = nota.fecha ? new Date(nota.fecha).toLocaleString() : '';
-        nuevaNota.innerHTML = `
+  const contenedor = document.getElementById('contenedor-notas');
+  if (!contenedor) return;
+  // Elimina notas existentes (excepto el add-box)
+  contenedor.querySelectorAll('.note-box').forEach(nota => nota.remove());
+  notas.forEach(nota => {
+    const nuevaNota = document.createElement('div');
+    nuevaNota.classList.add('note-box');
+    nuevaNota.setAttribute('data-uuid', nota.uuid);
+    // Solo una columna de fecha
+    let fechaTexto = nota.fecha ? new Date(nota.fecha).toLocaleString() : '';
+    nuevaNota.innerHTML = `
             <h3 class="note-title">${nota.titulo}</h3>
             <p class="note-content">${nota.contenido}</p>
             <div class="note-footer">
@@ -49,55 +49,55 @@ function mostrarNotasDesdeBackend(notas) {
               </button>
             </div>
         `;
-        nuevaNota.querySelector('.delete-btn').addEventListener('click', function (e) {
-            e.stopPropagation();
-            // Eliminar de la base de datos
-            const uuid = nuevaNota.getAttribute('data-uuid');
-            if (uuid) {
-                fetch('main.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: `accion=eliminar&uuid=${encodeURIComponent(uuid)}`
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        nuevaNota.remove();
-                    } else {
-                        alert('Error al eliminar la nota: ' + data.message);
-                    }
-                })
-                .catch(() => alert('Error al conectar con el servidor.'));
+    nuevaNota.querySelector('.delete-btn').addEventListener('click', function (e) {
+      e.stopPropagation();
+      // Eliminar de la base de datos
+      const uuid = nuevaNota.getAttribute('data-uuid');
+      if (uuid) {
+        fetch('main.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: `accion=eliminar&uuid=${encodeURIComponent(uuid)}`
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              nuevaNota.remove();
             } else {
-                nuevaNota.remove();
+              alert('Error al eliminar la nota: ' + data.message);
             }
-        });
-        const cajaAgregar = contenedor.querySelector('.add-box');
-        contenedor.insertBefore(nuevaNota, cajaAgregar.nextSibling);
+          })
+          .catch(() => alert('Error al conectar con el servidor.'));
+      } else {
+        nuevaNota.remove();
+      }
     });
+    const cajaAgregar = contenedor.querySelector('.add-box');
+    contenedor.insertBefore(nuevaNota, cajaAgregar.nextSibling);
+  });
 }
 
 function generarUUID() {
-    // Generador simple de UUID v4
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
+  // Generador simple de UUID v4
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
 }
 
 function agregarNota() {
-    const contenedor = document.getElementById('contenedor-notas');
-    const nuevaNota = document.createElement('div'); //crea la nota nueva
-    nuevaNota.classList.add('note-box');
-    // Generar y asignar UUID
-    const uuid = generarUUID();
-    nuevaNota.setAttribute('data-uuid', uuid);
+  const contenedor = document.getElementById('contenedor-notas');
+  const nuevaNota = document.createElement('div'); //crea la nota nueva
+  nuevaNota.classList.add('note-box');
+  // Generar y asignar UUID
+  const uuid = generarUUID();
+  nuevaNota.setAttribute('data-uuid', uuid);
 
-    const fechaHora = new Date();
-    const fechaHoraTexto = fechaHora.toLocaleString();
+  const fechaHora = new Date();
+  const fechaHoraTexto = fechaHora.toLocaleString();
 
-    //aca le dice al atributo nuevaNota que va a tener dentro lo siguiente
-    nuevaNota.innerHTML = ` 
+  //aca le dice al atributo nuevaNota que va a tener dentro lo siguiente
+  nuevaNota.innerHTML = ` 
         <h3 class="note-title">Título de nota</h3>
         <p class="note-content">Agregar texto :)</p>
         <div class="note-footer">
@@ -112,164 +112,161 @@ function agregarNota() {
           </div>
       `;
 
-    //funcion para borrar nota
-    nuevaNota.querySelector('.delete-btn').addEventListener('click', function (e) {
-        e.stopPropagation(); // esto por ahora no anda, va a servir en un futuro para ampliar la nota y que no se rompa nada
-        // Eliminar de la base de datos
-        const uuid = nuevaNota.getAttribute('data-uuid');
-        // Si la nota no tiene título ni contenido (nota vacía y no guardada)
-        const titulo = nuevaNota.querySelector('.note-title').innerText.trim();
-        const contenido = nuevaNota.querySelector('.note-content').innerText.trim();
-        if ((!titulo || titulo === 'Título de nota') && (!contenido || contenido === 'Agregar texto :)')) {
-            // Nota vacía, simplemente eliminar del DOM
+  //funcion para borrar nota
+  nuevaNota.querySelector('.delete-btn').addEventListener('click', function (e) {
+    e.stopPropagation(); // esto por ahora no anda, va a servir en un futuro para ampliar la nota y que no se rompa nada
+    // Eliminar de la base de datos
+    const uuid = nuevaNota.getAttribute('data-uuid');
+    // Si la nota no tiene título ni contenido (nota vacía y no guardada)
+    const titulo = nuevaNota.querySelector('.note-title').innerText.trim();
+    const contenido = nuevaNota.querySelector('.note-content').innerText.trim();
+    if ((!titulo || titulo === 'Título de nota') && (!contenido || contenido === 'Agregar texto :)')) {
+      // Nota vacía, simplemente eliminar del DOM
+      nuevaNota.remove();
+      return;
+    }
+    if (uuid) {
+      fetch('main.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `accion=eliminar&uuid=${encodeURIComponent(uuid)}`
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
             nuevaNota.remove();
-            return;
-        }
-        if (uuid) {
-            fetch('main.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `accion=eliminar&uuid=${encodeURIComponent(uuid)}`
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    nuevaNota.remove();
-                } else {
-                    alert('Error al eliminar la nota: ' + data.message);
-                }
-            })
-            .catch(() => alert('Error al conectar con el servidor.'));
-        } else {
-            nuevaNota.remove();
-        }
-    });
+          } else {
+            alert('Error al eliminar la nota: ' + data.message);
+          }
+        })
+        .catch(() => alert('Error al conectar con el servidor.'));
+    } else {
+      nuevaNota.remove();
+    }
+  });
 
-    const cajaAgregar = contenedor.querySelector('.add-box');
-    contenedor.insertBefore(nuevaNota, cajaAgregar.nextSibling); //agrega la nueva nota despues del boton agregar nueva nota
+  const cajaAgregar = contenedor.querySelector('.add-box');
+  contenedor.insertBefore(nuevaNota, cajaAgregar.nextSibling); //agrega la nueva nota despues del boton agregar nueva nota
 }                                                              //funciona raro igual
 
 // detecta el click y abre la nota
 document.addEventListener('click', function (e) {
-    const nota = e.target.closest('.note-box');
-    if (nota && !e.target.classList.contains('delete-btn')) {
-        ampliarNota(nota);
-    }
-});
-
-function ampliarNota(notaOriginal) {
-    const overlay = document.createElement('div');
-    overlay.className = 'overlay';
-
-    // mejor en lugar de clonar la nota hago una copia visual
-    const notaClonada = document.createElement('div');
-    notaClonada.className = 'ampliada';
-
-    // agarro lo original
-    const tituloOriginal = notaOriginal.querySelector('.note-title').innerText;
-    const contenidoOriginal = notaOriginal.querySelector('.note-content').innerText;
-
-    const titulo = document.createElement('h3');
-    titulo.className = 'note-title';
-    titulo.contentEditable = true;
-    titulo.innerText = tituloOriginal;
-
-    const contenido = document.createElement('p');
-    contenido.className = 'note-content';
-    contenido.contentEditable = true;
-    contenido.innerText = contenidoOriginal;
-
-    // Obtener uuid de la nota si existe
-    const notaUuid = notaOriginal.getAttribute('data-uuid');
-
-    // el boton de cerrar pero tmb guarda cambios
-    const cerrarBtn = document.createElement('button');
-    cerrarBtn.className = 'cerrar-btn';
-    cerrarBtn.innerHTML = '✖';
-    cerrarBtn.onclick = () => {
-        const nuevoTitulo = titulo.innerText;
-        const nuevoContenido = contenido.innerText;
-        const tituloOriginal = notaOriginal.querySelector('.note-title').innerText;
-        const contenidoOriginal = notaOriginal.querySelector('.note-content').innerText;
-        // Solo guardar si hay cambios
-        if (nuevoTitulo !== tituloOriginal || nuevoContenido !== contenidoOriginal) {
-            notaOriginal.querySelector('.note-title').innerText = nuevoTitulo;
-            notaOriginal.querySelector('.note-content').innerText = nuevoContenido;
-            // Enviar los datos al backend, incluyendo uuid si existe
-            let body = `titulo=${encodeURIComponent(nuevoTitulo)}&contenido=${encodeURIComponent(nuevoContenido)}`;
-            if (notaUuid) {
-                body += `&uuid=${encodeURIComponent(notaUuid)}`;
-            }
-            fetch('main.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    // Si el backend devuelve el uuid, actualizar el data-uuid
-                    if (data.uuid) {
-                        notaOriginal.setAttribute('data-uuid', data.uuid);
-                    }
-                    // Actualizar la fecha local en la nota
-                    const fechaSpan = notaOriginal.querySelector('.note-date');
-                    if (fechaSpan) {
-                        const ahora = new Date();
-                        fechaSpan.textContent = ahora.toLocaleString();
-                    }
-                } else {
-                    alert('Error: ' + data.message);
-                }
-            })
-            .catch(() => alert('Error al conectar con el servidor.'));
-        }
-        overlay.remove();
-    };
-
-    // agregar todo
-    notaClonada.appendChild(cerrarBtn);
-    notaClonada.appendChild(titulo);
-    notaClonada.appendChild(contenido);
-    overlay.appendChild(notaClonada);
-    document.body.appendChild(overlay);
-
-    
-}
-
-function inicializarPerfil() {
-// abrir selector de archivos cuando apretas el perfil
-const foto = document.getElementById('fotoPerfil');
-const input = document.getElementById('inputFoto');
-
-foto.addEventListener('click', () => input.click());
-
-input.addEventListener('change', () => {
-  const file = input.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = e => {
-      foto.src = e.target.result;
-      // guarda en localstorage para mantenerlo al recargar:
-      localStorage.setItem('fotoPerfil', e.target.result);
-    };
-    reader.readAsDataURL(file);
+  const nota = e.target.closest('.note-box');
+  if (nota && !e.target.classList.contains('delete-btn')) {
+    ampliarNota(nota);
   }
 });
 
-// por si ya hay una imagen guardada
-const guardada = localStorage.getItem('fotoPerfil');
-if (guardada) {
-  foto.src = guardada;
+function ampliarNota(notaOriginal) {
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+
+  // mejor en lugar de clonar la nota hago una copia visual
+  const notaClonada = document.createElement('div');
+  notaClonada.className = 'ampliada';
+
+  // agarro lo original
+  const tituloOriginal = notaOriginal.querySelector('.note-title').innerText;
+  const contenidoOriginal = notaOriginal.querySelector('.note-content').innerText;
+
+  const titulo = document.createElement('h3');
+  titulo.className = 'note-title';
+  titulo.contentEditable = true;
+  titulo.innerText = tituloOriginal;
+
+  const contenido = document.createElement('p');
+  contenido.className = 'note-content';
+  contenido.contentEditable = true;
+  contenido.innerText = contenidoOriginal;
+
+  // Obtener uuid de la nota si existe
+  const notaUuid = notaOriginal.getAttribute('data-uuid');
+
+  // el boton de cerrar pero tmb guarda cambios
+  const cerrarBtn = document.createElement('button');
+  cerrarBtn.className = 'cerrar-btn';
+  cerrarBtn.innerHTML = '✖';
+  cerrarBtn.onclick = () => {
+    // guardar cambios en la original
+    const nuevoTitulo = titulo.innerText;
+    const nuevoContenido = contenido.innerText;
+    notaOriginal.querySelector('.note-title').innerText = nuevoTitulo;
+    notaOriginal.querySelector('.note-content').innerText = nuevoContenido;
+    overlay.remove();
+    // Enviar los datos al backend, incluyendo uuid si existe
+    let body = `titulo=${encodeURIComponent(nuevoTitulo)}&contenido=${encodeURIComponent(nuevoContenido)}`;
+    if (notaUuid) {
+      body += `&uuid=${encodeURIComponent(notaUuid)}`;
+    }
+    fetch('main.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          console.log('Nota guardada correctamente');
+          // Si el backend devuelve el uuid, actualizar el data-uuid
+          if (data.uuid) {
+            notaOriginal.setAttribute('data-uuid', data.uuid);
+          }
+          // Actualizar la fecha local en la nota
+          const fechaSpan = notaOriginal.querySelector('.note-date');
+          if (fechaSpan) {
+            const ahora = new Date();
+            fechaSpan.textContent = ahora.toLocaleString();
+          }
+        } else {
+          alert('Error: ' + data.message);
+        }
+      })
+      .catch(() => alert('Error al conectar con el servidor.'));
+  };
+
+  // agregar todo
+  notaClonada.appendChild(cerrarBtn);
+  notaClonada.appendChild(titulo);
+  notaClonada.appendChild(contenido);
+  overlay.appendChild(notaClonada);
+  document.body.appendChild(overlay);
+
+
 }
+
+function inicializarPerfil() {
+  // abrir selector de archivos cuando apretas el perfil
+  const foto = document.getElementById('fotoPerfil');
+  const input = document.getElementById('inputFoto');
+
+  foto.addEventListener('click', () => input.click());
+
+  input.addEventListener('change', () => {
+    const file = input.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        foto.src = e.target.result;
+        // guarda en localstorage para mantenerlo al recargar:
+        localStorage.setItem('fotoPerfil', e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // por si ya hay una imagen guardada
+  const guardada = localStorage.getItem('fotoPerfil');
+  if (guardada) {
+    foto.src = guardada;
+  }
 
   // boton volver atras
   document.getElementById('btnVolver').addEventListener('click', () => {
     window.location.href = 'main.html';
   });
- }
- document.addEventListener('DOMContentLoaded', () => {
-    inicializarPerfil();
+}
+document.addEventListener('DOMContentLoaded', () => {
+  inicializarPerfil();
 });
 
 const btnMenu = document.getElementById('btnMenu');
@@ -299,7 +296,7 @@ function mostrarSeccion(seccion) {
 }
 
 function agregargrupo() {
-  const modal = document.getElementById('modal');
+  const modal = document.getElementById('modalGrupo');
   const input = document.getElementById('nombreGrupoInput');
   modal.style.display = 'flex';
   input.value = '';
@@ -313,28 +310,33 @@ document.getElementById('btnCrearGrupo').addEventListener('click', () => {
     alert('Por favor, ingresa un nombre');
     return;
   }
-//crear grupo
+  //crear grupo
   const grupo = document.createElement('div');
   grupo.className = 'add-box grupo-creado';
   grupo.onclick = () => {
     mostrarVistaGrupo(nombre);
   };
   grupo.innerHTML = `
-  <div class="icon">📁</div>
+  <div class="icon"><svg width="200" height="200" viewBox="0 0 80 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+      <circle cx="28" cy="18" r="8" fill="rgb(70, 81, 183)" />
+      <path fill="rgb(70, 81, 183)" d="M12 40c0-6 32-6 32 0v6H12v-6z" />
+      <circle cx="44" cy="18" r="8" fill="rgb(150, 160, 230)" />
+      <path fill="rgb(150, 160, 230)" d="M28 40c0-6 32-6 32 0v6H28v-6z" />
+    </svg></div>
   <p>${nombre}</p>
 `;
   contenedor.appendChild(grupo);
 
 
   // Cerrar modal
-  document.getElementById('modal').style.display = 'none';
+  document.getElementById('modalGrupo').style.display = 'none';
 
 });
 
 // Cerrar el modal al hacer clic fuera del contenido
 window.addEventListener('click', (e) => {
-  if (e.target.id === 'modal') {
-    document.getElementById('modal').style.display = 'none';
+  if (e.target.id === 'modalGrupo') {
+    document.getElementById('modalGrupo').style.display = 'none';
   }
 });
 
@@ -382,3 +384,115 @@ function agregarNotaAGrupo() {
 
   contenedor.appendChild(nuevaNota);
 }
+
+// Mostrar el modal perfil
+function abrirModalPerfil() {
+  document.getElementById('modalPerfil').classList.remove('oculto');
+}
+
+// Cerrar el modal perfil
+function cerrarModalPerfil() {
+  document.getElementById('modalPerfil').classList.add('oculto');
+}
+
+// Click en la imagen para cambiarla
+document.addEventListener('DOMContentLoaded', function () {
+  const foto = document.getElementById('fotoPerfil');
+  const input = document.getElementById('inputFoto');
+
+  if (foto && input) {
+    foto.addEventListener('click', () => input.click());
+
+    input.addEventListener('change', function () {
+      const archivo = this.files[0];
+      if (archivo) {
+        const lector = new FileReader();
+        lector.onload = function (e) {
+          foto.src = e.target.result;
+        };
+        lector.readAsDataURL(archivo);
+      }
+    });
+  }
+});
+
+function agregarAmigoAGrupo() {
+  document.getElementById('modalAgregarAmigo').classList.remove('oculto');
+}
+
+function cerrarModalAgregarAmigo() {
+  document.getElementById('modalAgregarAmigo').classList.add('oculto');
+}
+
+function buscarUsuario() {
+  const input = document.getElementById('buscadorUsuario').value.trim();
+  const mensaje = document.getElementById('mensajeBusqueda');
+
+  if (input === '') {
+    mensaje.textContent = 'Ingresá un nombre de usuario.';
+  } else {
+
+    mensaje.textContent = 'Usuario no encontrado';
+  }
+}
+
+function toggleNotificaciones() {
+  const bandeja = document.getElementById('bandejaNotificaciones');
+  bandeja.classList.toggle('oculto');
+}
+
+function agregarNotificacion(mensaje) {
+  const bandeja = document.getElementById("bandejaNotificaciones");
+  const listaNotificaciones = document.getElementById('listaNotificaciones');
+  listaNotificaciones.innerHTML = '';
+
+  // Crear notificación
+  const noti = document.createElement("div");
+  noti.className = "notificacion";
+
+  const texto = document.createElement("p");
+  texto.innerHTML = mensaje;
+
+  const acciones = document.createElement("div");
+  acciones.className = "acciones-notificacion";
+
+  const aceptar = document.createElement("span");
+  aceptar.className = "aceptar";
+  aceptar.innerText = "✔️";
+  aceptar.onclick = () => {
+    alert("Grupo aceptado");
+    noti.remove();
+    verificarNotificacionesVacias();
+  };
+
+  const eliminar = document.createElement("span");
+  eliminar.className = "eliminar";
+  eliminar.innerText = "❌";
+  eliminar.onclick = () => {
+    noti.remove();
+    verificarNotificacionesVacias();
+  };
+
+  acciones.appendChild(aceptar);
+  acciones.appendChild(eliminar);
+
+  noti.appendChild(texto);
+  noti.appendChild(acciones);
+
+  bandeja.appendChild(noti);
+}
+
+
+
+function verificarNotificacionesVacias() {
+  const bandeja = document.getElementById("bandejaNotificaciones");
+  const mensajeDefault = document.getElementById("mensajeNotificacion");
+
+  // Si no hay más notificaciones visibles
+  const notificaciones = bandeja.querySelectorAll(".notificacion");
+  if (listaNotificaciones.children.length === 0) {
+  listaNotificaciones.innerHTML = '<li>Sin notificaciones</li>';
+}
+}
+
+
