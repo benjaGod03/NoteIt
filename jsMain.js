@@ -12,9 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Cargar notas del usuario al iniciar
-
   fetch('main.php?action=listar&id_grupo=0')
-
     .then(res => res.json())
     .then(data => {
       if (data.success && Array.isArray(data.notas)) {
@@ -24,7 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     })
     .catch(err => console.error('Error al obtener notas:', err));
-
 
   // Cargar grupos del usuario al iniciar
   fetch('main.php?action=listar_grupos')
@@ -48,7 +45,6 @@ function mostrarNotasDesdeBackend(notas, id_grupo = null) {
   } else {
     contenedor = document.getElementById('contenedor-notas');
   }
-
   if (!contenedor) return;
   // Elimina notas existentes (excepto el add-box)
   contenedor.querySelectorAll('.note-box').forEach(nota => nota.remove());
@@ -56,9 +52,6 @@ function mostrarNotasDesdeBackend(notas, id_grupo = null) {
     const nuevaNota = document.createElement('div');
     nuevaNota.classList.add('note-box');
     nuevaNota.setAttribute('data-uuid', nota.uuid);
-
-    // Solo una columna de fecha
-
     let fechaTexto = nota.fecha ? new Date(nota.fecha).toLocaleString() : '';
     nuevaNota.innerHTML = `
             <h3 class="note-title">${nota.titulo}</h3>
@@ -76,7 +69,6 @@ function mostrarNotasDesdeBackend(notas, id_grupo = null) {
         `;
     nuevaNota.querySelector('.delete-btn').addEventListener('click', function (e) {
       e.stopPropagation();
-
       const uuid = nuevaNota.getAttribute('data-uuid');
       let body = `accion=eliminar&uuid=${encodeURIComponent(uuid)}`;
       if (id_grupo && id_grupo !== 0 && id_grupo !== '0') {
@@ -269,7 +261,6 @@ function ampliarNota(notaOriginal) {
   notaClonada.appendChild(contenido);
   overlay.appendChild(notaClonada);
   document.body.appendChild(overlay);
-
 }
 
 function generarUUID() {
@@ -340,7 +331,6 @@ function agregarNota() {
     }
   });
 
-
   nuevaNota.addEventListener('click', function (e) {
     if (!e.target.classList.contains('delete-btn')) {
       ampliarNota(nuevaNota);
@@ -350,7 +340,6 @@ function agregarNota() {
   const cajaAgregar = contenedor.querySelector('.add-box');
   contenedor.insertBefore(nuevaNota, cajaAgregar.nextSibling); //agrega la nueva nota despues del boton agregar nueva nota
 }                                                              //funciona raro igual
-
 
 function inicializarPerfil() {
   // abrir selector de archivos cuando apretas el perfil
@@ -380,7 +369,7 @@ function inicializarPerfil() {
 
   // boton volver atras
   document.getElementById('btnVolver').addEventListener('click', () => {
-    window.location.href = 'main.html';
+    window.location.href = 'main.php';
   });
 }
 document.addEventListener('DOMContentLoaded', () => {
@@ -429,7 +418,6 @@ document.getElementById('btnCrearGrupo').addEventListener('click', (e) => {
     alert('Por favor, ingresa un nombre');
     return;
   }
-
   // Crear grupo en el backend y usar el id real
   fetch('main.php', {
     method: 'POST',
@@ -447,7 +435,6 @@ document.getElementById('btnCrearGrupo').addEventListener('click', (e) => {
     .catch(() => alert('Error al conectar con el servidor.'));
   // Cerrar modal
   document.getElementById('modalGrupo').style.display = 'none';
-
 });
 
 // Cerrar el modal al hacer clic fuera del contenido
@@ -458,6 +445,7 @@ window.addEventListener('click', (e) => {
 });
 
 function volverAGrupos() {
+  grupoActivoId = null; // Resetear el grupo activo
   document.getElementById('vista-grupo').style.display = 'none';
   document.getElementById('notas-grupales').style.display = 'block';
 }
@@ -562,11 +550,9 @@ function toggleNotificaciones() {
   bandeja.classList.toggle('oculto');
 }
 
-
 function agregarNotificacion(mensaje, id, idGrupo) {
   const bandeja = document.getElementById("bandejaNotificaciones");
   const listaNotificaciones = document.getElementById('listaNotificaciones');
-
 
   // Crear notificación
   const noti = document.createElement("div");
@@ -582,7 +568,6 @@ function agregarNotificacion(mensaje, id, idGrupo) {
   aceptar.className = "aceptar";
   aceptar.innerText = "✔️";
   aceptar.onclick = () => {
-
     noti.remove();
     fetch('main.php?action=agregar_miembro&id_grupo='+ encodeURIComponent(idGrupo))
     .then(res => res.json())
@@ -596,15 +581,12 @@ function agregarNotificacion(mensaje, id, idGrupo) {
   };
 
 
-
   const eliminar = document.createElement("span");
   eliminar.className = "eliminar";
   eliminar.innerText = "❌";
   eliminar.onclick = () => {
     noti.remove();
-
     eliminarNotificacion(id);
-
     verificarNotificacionesVacias();
   };
 
@@ -616,7 +598,6 @@ function agregarNotificacion(mensaje, id, idGrupo) {
 
   bandeja.appendChild(noti);
 }
-
 
 //Funcion para eliminar la notificacion
 function eliminarNotificacion(id) {
@@ -657,7 +638,6 @@ function cargarNotificaciones() {
 }
 
 setInterval(cargarNotificaciones, 10000);
-
 
 function verificarNotificacionesVacias() {
   const bandeja = document.getElementById("bandejaNotificaciones");
