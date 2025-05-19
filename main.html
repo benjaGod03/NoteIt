@@ -78,8 +78,11 @@
   <div id="modalGrupo" class="modal modalGrupo oculto">
     <div id="modalContentGrupo" class="modal-contenido">
       <h3>Nuevo Grupo</h3>
-      <input type="text" id="nombreGrupoInput" class="input" placeholder="Nombre del grupo" />
-      <button id="btnCrearGrupo" class="btn">Crear grupo</button>
+      <form method="POST" action="main.php">
+        <input type="hidden" name="accion" value="crear_grupo">
+        <input type="text" name="nombre_grupo" id="nombreGrupoInput" class="input" placeholder="Nombre del grupo" required />
+        <button type="submit" id="btnCrearGrupo" class="btn">Crear grupo</button>
+      </form>
     </div>
   </div>
   <!-- pestañas para cambiar de seccion -->
@@ -101,11 +104,11 @@
       </div>
       <span class="cerrar-modal" onclick="cerrarModalPerfil()">×</span>
       <div class="perfil-container">
-        <h1>correodefault@gmail.com</h1>
+        <h1><?php echo isset($_SESSION['correo']) ? htmlspecialchars($_SESSION['correo']) : ''; ?></h1>
         <input type="file" id="inputFoto" class="oculto" accept="image/*">
         <img src="images/descarga.svg" alt="Foto de perfil" class="foto-perfil" id="fotoPerfil">
         <h2 contenteditable="true" id="nombrePerfil">
-  nombre de perfil<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 24 24" style="vertical-align: middle; margin-left: 8px;">
+  <?php echo isset($usuario) ? htmlspecialchars($usuario) : ''; ?><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 24 24" style="vertical-align: middle; margin-left: 8px;">
     <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM21.71 6.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
   </svg>
 </h2>
