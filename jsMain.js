@@ -12,7 +12,9 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Cargar notas del usuario al iniciar
-  fetch('main.php?action=listar')
+
+  fetch('main.php?action=listar&id_grupo=0')
+
     .then(res => res.json())
     .then(data => {
       if (data.success && Array.isArray(data.notas)) {
@@ -22,10 +24,31 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     })
     .catch(err => console.error('Error al obtener notas:', err));
+
+
+  // Cargar grupos del usuario al iniciar
+  fetch('main.php?action=listar_grupos')
+    .then(res => res.json())
+    .then(data => {
+      if (data.success && Array.isArray(data.grupos)) {
+        mostrarGruposDesdeBackend(data.grupos);
+      } else {
+        console.error('No se pudieron cargar los grupos:', data.message);
+      }
+    })
+    .catch(err => console.error('Error al obtener grupos:', err));
 });
 
-function mostrarNotasDesdeBackend(notas) {
-  const contenedor = document.getElementById('contenedor-notas');
+
+function mostrarNotasDesdeBackend(notas, id_grupo = null) {
+  // Selecciona el contenedor correcto según el contexto
+  let contenedor;
+  if (id_grupo !== null) {
+    contenedor = document.getElementById('contenedor-notas-grupo');
+  } else {
+    contenedor = document.getElementById('contenedor-notas');
+  }
+
   if (!contenedor) return;
   // Elimina notas existentes (excepto el add-box)
   contenedor.querySelectorAll('.note-box').forEach(nota => nota.remove());
@@ -33,7 +56,9 @@ function mostrarNotasDesdeBackend(notas) {
     const nuevaNota = document.createElement('div');
     nuevaNota.classList.add('note-box');
     nuevaNota.setAttribute('data-uuid', nota.uuid);
+
     // Solo una columna de fecha
+
     let fechaTexto = nota.fecha ? new Date(nota.fecha).toLocaleString() : '';
     nuevaNota.innerHTML = `
             <h3 class="note-title">${nota.titulo}</h3>
@@ -44,37 +69,207 @@ function mostrarNotasDesdeBackend(notas) {
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#76448a" stroke-width="2">
             <path d="M3 6h18M5 6l1 16h12l1-16H5z" />
             <path d="M10 11v6M14 11v6" />
-            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+            <path d="M9 6V4a1 1 0 0 1 1-1h4a 1 1 0 0 1 1 1v2" />
             </svg>
               </button>
             </div>
         `;
     nuevaNota.querySelector('.delete-btn').addEventListener('click', function (e) {
       e.stopPropagation();
-      // Eliminar de la base de datos
+
       const uuid = nuevaNota.getAttribute('data-uuid');
-      if (uuid) {
-        fetch('main.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: `accion=eliminar&uuid=${encodeURIComponent(uuid)}`
+      let body = `accion=eliminar&uuid=${encodeURIComponent(uuid)}`;
+      if (id_grupo && id_grupo !== 0 && id_grupo !== '0') {
+        body += `&id_grupo=${encodeURIComponent(id_grupo)}`;
+      }
+      fetch('main.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            nuevaNota.remove();
+          } else {
+            alert('Error al eliminar la nota: ' + data.message);
+          }
         })
-          .then(res => res.json())
-          .then(data => {
-            if (data.success) {
-              nuevaNota.remove();
-            } else {
-              alert('Error al eliminar la nota: ' + data.message);
-            }
-          })
-          .catch(() => alert('Error al conectar con el servidor.'));
-      } else {
-        nuevaNota.remove();
+        .catch(() => alert('Error al conectar con el servidor.'));
+    });
+    // Click para ampliar nota individual o grupal
+    nuevaNota.addEventListener('click', function (e) {
+      if (!e.target.classList.contains('delete-btn')) {
+        ampliarNota(nuevaNota);
       }
     });
     const cajaAgregar = contenedor.querySelector('.add-box');
     contenedor.insertBefore(nuevaNota, cajaAgregar.nextSibling);
   });
+}
+
+// Variable global para el id del grupo actualmente abierto
+let grupoActivoId = null;
+
+function mostrarGruposDesdeBackend(grupos) {
+  const contenedor = document.getElementById('contenedor-grupos');
+  if (!contenedor) return;
+  // Elimina grupos existentes (excepto el add-box)
+  contenedor.querySelectorAll('.grupo-creado').forEach(grupo => grupo.remove());
+  grupos.forEach(grupo => {
+    const divGrupo = document.createElement('div');
+    divGrupo.className = 'add-box grupo-creado';
+    divGrupo.onclick = () => {
+      mostrarVistaGrupo(grupo.nombre, grupo.id);
+    };
+    divGrupo.innerHTML = `
+      <div class="icon"><svg width="200" height="200" viewBox="0 0 80 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+      <circle cx="28" cy="18" r="8" fill="rgb(70, 81, 183)" />
+      <path fill="rgb(70, 81, 183)" d="M12 40c0-6 32-6 32 0v6H12v-6z" />
+      <circle cx="44" cy="18" r="8" fill="rgb(150, 160, 230)" />
+      <path fill="rgb(150, 160, 230)" d="M28 40c0-6 32-6 32 0v6H28v-6z" />
+      </svg></div>
+      <p>${grupo.nombre}</p>
+    `;
+    // Insertar después del add-box
+    const cajaAgregar = contenedor.querySelector('.add-box');
+    contenedor.insertBefore(divGrupo, cajaAgregar.nextSibling);
+  });
+}
+
+function mostrarVistaGrupo(nombreGrupo, idGrupo) {
+  document.getElementById('notas-grupales').style.display = 'none';
+  document.getElementById('vista-grupo').style.display = 'block';
+  document.getElementById('nombre-del-grupo').innerText = nombreGrupo;
+  // Asegurarse de que el id sea un número entero
+  grupoActivoId = parseInt(idGrupo, 10);
+  // Limpiar las notas previas del contenedor de grupo
+  const contenedorGrupo = document.getElementById('contenedor-notas-grupo');
+  if (contenedorGrupo) {
+    contenedorGrupo.querySelectorAll('.note-box').forEach(nota => nota.remove());
+  }
+  fetch('main.php?action=listar&id_grupo=' + encodeURIComponent(grupoActivoId))
+    .then(res => res.json())
+    .then(data => {
+      if (data.success && Array.isArray(data.notas)) {
+        mostrarNotasDesdeBackend(data.notas, grupoActivoId);
+      } else {
+        alert('No se pudieron cargar las notas del grupo.');
+      }
+    })
+    .catch(() => alert('Error al obtener notas del grupo.'));
+}
+
+
+
+function agregarNotaAGrupo() {
+  if (!grupoActivoId) return;
+  const contenedor = document.getElementById('contenedor-notas-grupo');
+  const nuevaNota = document.createElement('div');
+  nuevaNota.classList.add('note-box');
+  const uuid = generarUUID();
+  nuevaNota.setAttribute('data-uuid', uuid);
+  const fechaHora = new Date();
+  const fechaHoraTexto = fechaHora.toLocaleString();
+  nuevaNota.innerHTML = `
+        <h3 class="note-title" contenteditable="true">Título de nota</h3>
+        <p class="note-content" contenteditable="true">Texto grupal :)</p>
+        <div class="note-footer">
+          <span class="note-date">${fechaHoraTexto}</span>
+          <button class="delete-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#76448a" stroke-width="2">
+              <path d="M3 6h18M5 6l1 16h12l1-16H5z" />
+              <path d="M10 11v6M14 11v6" />
+              <path d="M9 6V4a 1 1 0 0 1 1-1h4a 1 1 0 0 1 1 1v2" />
+            </svg>
+          </button>
+        </div>
+    `;
+  nuevaNota.querySelector('.delete-btn').addEventListener('click', function (e) {
+    e.stopPropagation();
+    const uuid = nuevaNota.getAttribute('data-uuid');
+    fetch('main.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `accion=eliminar&uuid=${encodeURIComponent(uuid)}&id_grupo=${encodeURIComponent(grupoActivoId)}`
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          nuevaNota.remove();
+        } else {
+          alert('Error al eliminar la nota grupal: ' + data.message);
+        }
+      })
+      .catch(() => alert('Error al conectar con el servidor.'));
+  });
+  nuevaNota.addEventListener('click', function (e) {
+    if (!e.target.classList.contains('delete-btn')) {
+      ampliarNota(nuevaNota);
+    }
+  });
+  const cajaAgregar = contenedor.querySelector('.add-box');
+  contenedor.insertBefore(nuevaNota, cajaAgregar.nextSibling);
+}
+
+function ampliarNota(notaOriginal) {
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  const notaClonada = document.createElement('div');
+  notaClonada.className = 'ampliada';
+  const tituloOriginal = notaOriginal.querySelector('.note-title').innerText;
+  const contenidoOriginal = notaOriginal.querySelector('.note-content').innerText;
+  const titulo = document.createElement('h3');
+  titulo.className = 'note-title';
+  titulo.contentEditable = true;
+  titulo.innerText = tituloOriginal;
+  const contenido = document.createElement('p');
+  contenido.className = 'note-content';
+  contenido.contentEditable = true;
+  contenido.innerText = contenidoOriginal;
+  const notaUuid = notaOriginal.getAttribute('data-uuid');
+  const cerrarBtn = document.createElement('button');
+  cerrarBtn.className = 'cerrar-btn';
+  cerrarBtn.innerHTML = '✖';
+  cerrarBtn.onclick = () => {
+    const nuevoTitulo = titulo.innerText;
+    const nuevoContenido = contenido.innerText;
+    notaOriginal.querySelector('.note-title').innerText = nuevoTitulo;
+    notaOriginal.querySelector('.note-content').innerText = nuevoContenido;
+    overlay.remove();
+    let body = `accion=guardar_nota&uuid=${encodeURIComponent(notaUuid)}&titulo=${encodeURIComponent(nuevoTitulo)}&contenido=${encodeURIComponent(nuevoContenido)}`;
+    // Detectar si es nota grupal
+    if (grupoActivoId && !isNaN(grupoActivoId)) {
+      body += `&id_grupo=${encodeURIComponent(grupoActivoId)}`;
+    }
+    fetch('main.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          if (data.uuid) {
+            notaOriginal.setAttribute('data-uuid', data.uuid);
+          }
+          const fechaSpan = notaOriginal.querySelector('.note-date');
+          if (fechaSpan) {
+            const ahora = new Date();
+            fechaSpan.textContent = ahora.toLocaleString();
+          }
+        } else {
+          alert('Error: ' + data.message);
+        }
+      })
+      .catch(() => alert('Error al conectar con el servidor.'));
+  };
+  notaClonada.appendChild(cerrarBtn);
+  notaClonada.appendChild(titulo);
+  notaClonada.appendChild(contenido);
+  overlay.appendChild(notaClonada);
+  document.body.appendChild(overlay);
+
 }
 
 function generarUUID() {
@@ -106,7 +301,7 @@ function agregarNota() {
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#76448a" stroke-width="2">
         <path d="M3 6h18M5 6l1 16h12l1-16H5z" />
         <path d="M10 11v6M14 11v6" />
-        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+        <path d="M9 6V4a 1 1 0 0 1 1-1h4a 1 1 0 0 1 1 1v2" />
         </svg>
             </button>
           </div>
@@ -145,94 +340,17 @@ function agregarNota() {
     }
   });
 
+
+  nuevaNota.addEventListener('click', function (e) {
+    if (!e.target.classList.contains('delete-btn')) {
+      ampliarNota(nuevaNota);
+    }
+  });
+
   const cajaAgregar = contenedor.querySelector('.add-box');
   contenedor.insertBefore(nuevaNota, cajaAgregar.nextSibling); //agrega la nueva nota despues del boton agregar nueva nota
 }                                                              //funciona raro igual
 
-// detecta el click y abre la nota
-document.addEventListener('click', function (e) {
-  const nota = e.target.closest('.note-box');
-  if (nota && !e.target.classList.contains('delete-btn')) {
-    ampliarNota(nota);
-  }
-});
-
-function ampliarNota(notaOriginal) {
-  const overlay = document.createElement('div');
-  overlay.className = 'overlay';
-
-  // mejor en lugar de clonar la nota hago una copia visual
-  const notaClonada = document.createElement('div');
-  notaClonada.className = 'ampliada';
-
-  // agarro lo original
-  const tituloOriginal = notaOriginal.querySelector('.note-title').innerText;
-  const contenidoOriginal = notaOriginal.querySelector('.note-content').innerText;
-
-  const titulo = document.createElement('h3');
-  titulo.className = 'note-title';
-  titulo.contentEditable = true;
-  titulo.innerText = tituloOriginal;
-
-  const contenido = document.createElement('p');
-  contenido.className = 'note-content';
-  contenido.contentEditable = true;
-  contenido.innerText = contenidoOriginal;
-
-  // Obtener uuid de la nota si existe
-  const notaUuid = notaOriginal.getAttribute('data-uuid');
-
-  // el boton de cerrar pero tmb guarda cambios
-  const cerrarBtn = document.createElement('button');
-  cerrarBtn.className = 'cerrar-btn';
-  cerrarBtn.innerHTML = '✖';
-  cerrarBtn.onclick = () => {
-    // guardar cambios en la original
-    const nuevoTitulo = titulo.innerText;
-    const nuevoContenido = contenido.innerText;
-    notaOriginal.querySelector('.note-title').innerText = nuevoTitulo;
-    notaOriginal.querySelector('.note-content').innerText = nuevoContenido;
-    overlay.remove();
-    // Enviar los datos al backend, incluyendo uuid si existe
-    let body = `titulo=${encodeURIComponent(nuevoTitulo)}&contenido=${encodeURIComponent(nuevoContenido)}`;
-    if (notaUuid) {
-      body += `&uuid=${encodeURIComponent(notaUuid)}`;
-    }
-    fetch('main.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          console.log('Nota guardada correctamente');
-          // Si el backend devuelve el uuid, actualizar el data-uuid
-          if (data.uuid) {
-            notaOriginal.setAttribute('data-uuid', data.uuid);
-          }
-          // Actualizar la fecha local en la nota
-          const fechaSpan = notaOriginal.querySelector('.note-date');
-          if (fechaSpan) {
-            const ahora = new Date();
-            fechaSpan.textContent = ahora.toLocaleString();
-          }
-        } else {
-          alert('Error: ' + data.message);
-        }
-      })
-      .catch(() => alert('Error al conectar con el servidor.'));
-  };
-
-  // agregar todo
-  notaClonada.appendChild(cerrarBtn);
-  notaClonada.appendChild(titulo);
-  notaClonada.appendChild(contenido);
-  overlay.appendChild(notaClonada);
-  document.body.appendChild(overlay);
-
-
-}
 
 function inicializarPerfil() {
   // abrir selector de archivos cuando apretas el perfil
@@ -303,31 +421,30 @@ function agregargrupo() {
   input.focus();
 }
 
-document.getElementById('btnCrearGrupo').addEventListener('click', () => {
+document.getElementById('btnCrearGrupo').addEventListener('click', (e) => {
+  e.preventDefault();
   const nombre = document.getElementById('nombreGrupoInput').value.trim();
   const contenedor = document.getElementById('contenedor-grupos');
   if (nombre === '') {
     alert('Por favor, ingresa un nombre');
     return;
   }
-  //crear grupo
-  const grupo = document.createElement('div');
-  grupo.className = 'add-box grupo-creado';
-  grupo.onclick = () => {
-    mostrarVistaGrupo(nombre);
-  };
-  grupo.innerHTML = `
-  <div class="icon"><svg width="200" height="200" viewBox="0 0 80 64" xmlns="http://www.w3.org/2000/svg" fill="none">
-      <circle cx="28" cy="18" r="8" fill="rgb(70, 81, 183)" />
-      <path fill="rgb(70, 81, 183)" d="M12 40c0-6 32-6 32 0v6H12v-6z" />
-      <circle cx="44" cy="18" r="8" fill="rgb(150, 160, 230)" />
-      <path fill="rgb(150, 160, 230)" d="M28 40c0-6 32-6 32 0v6H28v-6z" />
-    </svg></div>
-  <p>${nombre}</p>
-`;
-  contenedor.appendChild(grupo);
 
-
+  // Crear grupo en el backend y usar el id real
+  fetch('main.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'accion=crear_grupo&nombre_grupo=' + encodeURIComponent(nombre)
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success && data.id_grupo) {
+        mostrarVistaGrupo(nombre, data.id_grupo);
+      } else {
+        alert('Error al crear el grupo: ' + (data.message || 'Error desconocido'));
+      }
+    })
+    .catch(() => alert('Error al conectar con el servidor.'));
   // Cerrar modal
   document.getElementById('modalGrupo').style.display = 'none';
 
@@ -340,49 +457,9 @@ window.addEventListener('click', (e) => {
   }
 });
 
-function mostrarVistaGrupo(nombreGrupo) {
-  // ocultar otras secciones
-  document.getElementById('notas-grupales').style.display = 'none';
-  document.getElementById('vista-grupo').style.display = 'block';
-
-  // mostrar el nombre del grupo
-  document.getElementById('nombre-del-grupo').innerText = nombreGrupo;
-}
-
 function volverAGrupos() {
   document.getElementById('vista-grupo').style.display = 'none';
   document.getElementById('notas-grupales').style.display = 'block';
-}
-
-function agregarNotaAGrupo() {
-  const contenedor = document.getElementById('contenedor-notas-grupo');
-  const nuevaNota = document.createElement('div');
-  nuevaNota.classList.add('note-box');
-
-  const fechaHora = new Date();
-  const fechaHoraTexto = fechaHora.toLocaleString();
-
-  nuevaNota.innerHTML = `
-        <h3 class="note-title">Título de nota</h3>
-        <p class="note-content">Texto grupal :)</p>
-        <div class="note-footer">
-          <span class="note-date">${fechaHoraTexto}</span>
-          <button class="delete-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#76448a" stroke-width="2">
-              <path d="M3 6h18M5 6l1 16h12l1-16H5z" />
-              <path d="M10 11v6M14 11v6" />
-              <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
-            </svg>
-          </button>
-        </div>
-    `;
-
-  nuevaNota.querySelector('.delete-btn').addEventListener('click', function (e) {
-    e.stopPropagation();
-    nuevaNota.remove();
-  });
-
-  contenedor.appendChild(nuevaNota);
 }
 
 // Mostrar el modal perfil
@@ -414,6 +491,28 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   }
+//Funcion para que se guarde el nuevo nombre en la BDD cuando se deja de editar
+  const nombrePerfil = document.getElementById('nombrePerfil');
+  if (nombrePerfil) {
+    nombrePerfil.addEventListener('blur', function () {
+      // Solo el texto, sin el SVG
+      const nuevoNombre = nombrePerfil.childNodes[0].nodeValue.trim();
+      if (nuevoNombre.length > 0) {
+        fetch('main.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'accion=actualizar_nombre&nuevo_nombre=' + encodeURIComponent(nuevoNombre)
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (!data.success) {
+            alert('Error al actualizar el nombre: ' + data.message);
+          }
+        })
+        .catch(() => alert('Error al conectar con el servidor.'));
+      }
+    });
+  }
 });
 
 function agregarAmigoAGrupo() {
@@ -431,20 +530,43 @@ function buscarUsuario() {
   if (input === '') {
     mensaje.textContent = 'Ingresá un nombre de usuario.';
   } else {
-
-    mensaje.textContent = 'Usuario no encontrado';
+    fetch('main.php', {
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      body: 'accion=buscar_usuario&nombre=' + encodeURIComponent(input) + '&id_grupo=' + encodeURIComponent(grupoActivoId)
+    })
+      .then(res => res.json())
+      .then(data => {
+        // Mostrar el mensaje del backend
+        alert(data.message); // O puedes mostrarlo en el DOM, como prefieras
+        // Mostrar el campo debug SIEMPRE en la consola para depuración
+        if (data.debug) {
+          console.log('[DEBUG invitación]:', data.debug);
+        }
+        if (data.success) {
+          alert('Notificación enviada'); // Lógica adicional si fue exitoso
+        } else {
+          alert('Error en la notificación'); // Lógica si hubo error
+        }
+      })
+      .catch(err => {
+        console.error('Error al conectar con el servidor:', err);
+      });
   }
 }
+
+cargarNotificaciones();
 
 function toggleNotificaciones() {
   const bandeja = document.getElementById('bandejaNotificaciones');
   bandeja.classList.toggle('oculto');
 }
 
-function agregarNotificacion(mensaje) {
+
+function agregarNotificacion(mensaje, id, idGrupo) {
   const bandeja = document.getElementById("bandejaNotificaciones");
   const listaNotificaciones = document.getElementById('listaNotificaciones');
-  listaNotificaciones.innerHTML = '';
+
 
   // Crear notificación
   const noti = document.createElement("div");
@@ -460,16 +582,29 @@ function agregarNotificacion(mensaje) {
   aceptar.className = "aceptar";
   aceptar.innerText = "✔️";
   aceptar.onclick = () => {
-    alert("Grupo aceptado");
+
     noti.remove();
+    fetch('main.php?action=agregar_miembro&id_grupo='+ encodeURIComponent(idGrupo))
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) { "agregado a grupo"}
+      else { "error al agregar a grupo"}
+    })
+    .catch(err => console.error("Error al conectar con el servidor:", err));
+    eliminarNotificacion(id);
     verificarNotificacionesVacias();
   };
+
+
 
   const eliminar = document.createElement("span");
   eliminar.className = "eliminar";
   eliminar.innerText = "❌";
   eliminar.onclick = () => {
     noti.remove();
+
+    eliminarNotificacion(id);
+
     verificarNotificacionesVacias();
   };
 
@@ -482,6 +617,46 @@ function agregarNotificacion(mensaje) {
   bandeja.appendChild(noti);
 }
 
+
+//Funcion para eliminar la notificacion
+function eliminarNotificacion(id) {
+  fetch('main.php?action=eliminar_notificacion&id='+ encodeURIComponent(id) )
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        console.log("Notificación eliminada");
+      } else {
+        console.error("Error al eliminar la notificación:", data.message);
+      }
+    })
+    .catch(err => console.error("Error al conectar con el servidor:", err));
+  }
+
+function cargarNotificaciones() {
+  const listaNotificaciones = document.getElementById('listaNotificaciones');
+  if (listaNotificaciones) {
+    listaNotificaciones.innerHTML = '';
+  }
+  // Limpiar también todas las notificaciones visuales previas
+  const bandeja = document.getElementById('bandejaNotificaciones');
+  if (bandeja) {
+    bandeja.querySelectorAll('.notificacion').forEach(noti => noti.remove());
+  }
+  fetch('main.php?action=cargar_notificaciones')
+    .then(res => res.json())
+    .then(data => {
+      if (data.success && Array.isArray(data.notificaciones)) {
+        data.notificaciones.forEach(notificacion => {
+          agregarNotificacion(notificacion.contenido, notificacion.id, notificacion.idGrupo);
+        });
+      } else {
+        console.error('No se pudieron cargar las notificaciones:', data.message);
+      }
+    })
+    .catch(err => console.error('Error al obtener notificaciones:', err));
+}
+
+setInterval(cargarNotificaciones, 10000);
 
 
 function verificarNotificacionesVacias() {
