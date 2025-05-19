@@ -1,3 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="#4b2f5c" width="100" height="100">
-  <path d="M256 256A128 128 0 1 0 256 0a128 128 0 1 0 0 256zM96 288c-53 0-96 43-96 96v32c0 53 43 96 96 96h320c53 0 96-43 96-96v-32c0-53-43-96-96-96H96z"></path>
+<svg width="180" height="180" viewBox="16 10 32 38" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <!-- Cabeza más chica -->
+  <circle cx="32" cy="20" r="9" fill="rgb(70, 81, 183)"></circle>
+  <!-- Cuerpo -->
+  <path fill="rgb(70, 81, 183)" d="M16 38c0-8 32-8 32 0v6H16v-6z"></path>
 </svg>
