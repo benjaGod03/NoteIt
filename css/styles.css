@@ -116,8 +116,7 @@ body {
     border: none;
     background: none;
     outline: none;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    
+   box-shadow: 0 6px 20px rgba(255, 255, 255, 0.25), 0 4px 15px rgba(108, 92, 231, 0.4); 
 }
 
 .form-group label {

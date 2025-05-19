@@ -9,7 +9,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  
   overflow-x: hidden;
 }
 
@@ -90,13 +90,11 @@ body {
   backdrop-filter: blur(5px); 
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-
   gap: 10px;
   width: 92%;
-
   margin: auto;
   padding: 10px;
-  height: 520px;
+  height: 80vh;
   overflow-y: scroll;
   background-color: rgba(255, 255, 255, 0.8);
   border-radius: 20px;
@@ -139,9 +137,7 @@ body {
   align-items: center;
   justify-content: center;
   color: #6c5ce7;
-
   font-weight: bold;
-
 }
 
 /* Estilo de las notas */
@@ -326,9 +322,7 @@ body {
   border-radius: 16px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35); 
   padding: 16px;
-
   animation: modalFade 0.2s ease-out; /* animación sutil al aparecer */
-
   transition: all 0.3s ease-in-out;
 }
 @keyframes modalFade {
@@ -495,26 +489,9 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 10px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-
   animation: modalFade 0.2s ease-out;
   position: relative;
 }
-
-.perfil-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-}
-.perfil-container h1{
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.6); 
-  font-weight: 400; font-style: italic; 
-  margin-bottom: 12px;  
-  margin-top: 5px;
-  position: relative;
-}
-
 
 .perfil-container {
   display: flex;
@@ -587,9 +564,7 @@ body {
 
 .bandeja-notificaciones{
   position: absolute; 
-
   top: 85px;
-
   right: 20px; 
   background: linear-gradient(135deg, #5946d2, #4cb0e6);
   border: 1px solid #aab4ff;
@@ -667,22 +642,18 @@ body {
   border: none;
 }
 .menu .foto-perfil{
-
   width: 60px;
   height: 60px;
   border-radius: 50%;
   object-fit: fill;
   border: 2px solid rgb(70, 81, 183);
-
   box-shadow: 0 2px 6px rgba(255, 255, 255, 0.15);
   margin-bottom: 10px;
 }
 
 .menu {
   position: fixed;
-
   top: 85px;
-
   right: 10px;
   width: 220px;
   background: linear-gradient(135deg, #6c5ce7, #66b8e6);
@@ -740,9 +711,7 @@ body {
 }
 
 .seccion-selector button.activo {
-
   background-color: #4a148c;
-
 }
 
 .mensaje-grupal {
