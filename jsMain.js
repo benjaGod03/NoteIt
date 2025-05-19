@@ -115,7 +115,12 @@ function mostrarGruposDesdeBackend(grupos) {
       mostrarVistaGrupo(grupo.nombre, grupo.id);
     };
     divGrupo.innerHTML = `
-      <div class="icon">📁</div>
+      <div class="icon"><svg width="200" height="200" viewBox="0 0 80 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+      <circle cx="28" cy="18" r="8" fill="rgb(70, 81, 183)" />
+      <path fill="rgb(70, 81, 183)" d="M12 40c0-6 32-6 32 0v6H12v-6z" />
+      <circle cx="44" cy="18" r="8" fill="rgb(150, 160, 230)" />
+      <path fill="rgb(150, 160, 230)" d="M28 40c0-6 32-6 32 0v6H28v-6z" />
+      </svg></div>
       <p>${grupo.nombre}</p>
     `;
     // Insertar después del add-box
