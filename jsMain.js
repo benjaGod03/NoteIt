@@ -111,9 +111,6 @@ function mostrarGruposDesdeBackend(grupos) {
   grupos.forEach(grupo => {
     const divGrupo = document.createElement('div');
     divGrupo.className = 'add-box grupo-creado';
-    divGrupo.onclick = () => {
-      mostrarVistaGrupo(grupo.nombre, grupo.id);
-    };
     divGrupo.innerHTML = `
       <div class="icon"><svg width="200" height="200" viewBox="0 0 80 64" xmlns="http://www.w3.org/2000/svg" fill="none">
       <circle cx="28" cy="18" r="8" fill="rgb(70, 81, 183)" />
@@ -122,12 +119,30 @@ function mostrarGruposDesdeBackend(grupos) {
       <path fill="rgb(150, 160, 230)" d="M28 40c0-6 32-6 32 0v6H28v-6z" />
       </svg></div>
       <p>${grupo.nombre}</p>
+       <button class="delete-grupo-btn" title="Eliminar grupo">
+       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="#c00" stroke-width="2" viewBox="0 0 24 24">
+       <path d="M3 6h18M5 6l1 16h12l1-16H5z"/>
+       <path d="M10 11v6M14 11v6"/>
+       <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+      </svg>
+      </button>
     `;
+    // Evento para abrir grupo SOLO si no se hace click en el botón eliminar
+    divGrupo.addEventListener('click', function (e) {
+      if (e.target.classList.contains('delete-grupo-btn')) return;
+      mostrarVistaGrupo(grupo.nombre, grupo.id);
+    });
+    // Evento para eliminar grupo
+    divGrupo.querySelector('.delete-grupo-btn').addEventListener('click', function (e) {
+      e.stopPropagation();
+      eliminarGrupo(grupo.id, divGrupo);
+    });
     // Insertar después del add-box
     const cajaAgregar = contenedor.querySelector('.add-box');
     contenedor.insertBefore(divGrupo, cajaAgregar.nextSibling);
   });
 }
+
 
 function mostrarVistaGrupo(nombreGrupo, idGrupo) {
   document.getElementById('notas-grupales').style.display = 'none';
@@ -648,6 +663,24 @@ function verificarNotificacionesVacias() {
   if (listaNotificaciones.children.length === 0) {
   listaNotificaciones.innerHTML = '<li>Sin notificaciones</li>';
 }
+}
+
+function eliminarGrupo(idGrupo, elementoGrupo) {
+  if (!confirm('¿Seguro que quieres eliminar este grupo?')) return;
+  fetch('main.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'accion=eliminar_grupo&id_grupo=' + encodeURIComponent(idGrupo)
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        elementoGrupo.remove();
+      } else {
+        alert('Error al eliminar el grupo: ' + (data.message || 'Error desconocido'));
+      }
+    })
+    .catch(() => alert('Error al conectar con el servidor.'));
 }
 
 
