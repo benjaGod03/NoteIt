@@ -328,4 +328,46 @@ if($_SERVER['REQUEST_METHOD'] === 'GET' && $_GET["action"] ==='eliminar_notifica
     $stmt->execute();
     $response['success'] = true;
     exit();
+}
+// Eliminar grupo (y sus miembros y notas)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'eliminar_grupo') {
+    $idGrupo = $_POST['id_grupo'] ?? '';
+    $correo = $_SESSION['correo'] ?? '';
+    $response = ['success' => false, 'message' => ''];
+    if (empty($idGrupo) || empty($correo)) {
+        $response['message'] = 'Faltan datos para eliminar el grupo.';
+    } else {
+        try {
+            $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo->exec("SET time_zone = '-03:00'");
+            // Solo el creador puede eliminar el grupo
+            $stmt = $pdo->prepare("SELECT creador FROM grupos WHERE id = :idGrupo");
+            $stmt->bindParam(':idGrupo', $idGrupo);
+            $stmt->execute();
+            $grupo = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$grupo || $grupo['creador'] !== $correo) {
+                $response['message'] = 'Solo el creador puede eliminar el grupo.';
+            } else {
+                // Eliminar notas del grupo
+                $stmtNotas = $pdo->prepare("DELETE FROM notas WHERE autor = :idGrupo");
+                $stmtNotas->bindParam(':idGrupo', $idGrupo);
+                $stmtNotas->execute();
+                // Eliminar miembros del grupo
+                $stmtMiembros = $pdo->prepare("DELETE FROM grupo_miembros WHERE id_grupo = :idGrupo");
+                $stmtMiembros->bindParam(':idGrupo', $idGrupo);
+                $stmtMiembros->execute();
+                // Eliminar el grupo
+                $stmtGrupo = $pdo->prepare("DELETE FROM grupos WHERE id = :idGrupo");
+                $stmtGrupo->bindParam(':idGrupo', $idGrupo);
+                $stmtGrupo->execute();
+                $response['success'] = true;
+            }
+        } catch (PDOException $e) {
+            $response['message'] = 'Error al eliminar el grupo: ' . $e->getMessage();
+        }
+    }
+    header('Content-Type: application/json');
+    echo json_encode($response);
+    exit();
 }include 'main.html';
