@@ -206,7 +206,7 @@ body {
 }
 /* === HOMEPAGE === */
 .contenido {
-    min-height: 100vh;
+    min-height: 75vh;
     padding: 100px 60px 60px;
     color: white;
     text-align: center;
@@ -226,20 +226,32 @@ body {
     margin-bottom: 30px;
     max-width: 600px;
 }
+/* ojo cerrar abrir*/
+.eye-icon {
+    width: 24px;
+    height: 24px;
+    stroke: #4a148c;
+  }
+
+  .hidden {
+    display: none;
+  }
 
 .guia {
-    background-color: #2e2e3e;
+    position: relative;
+    background-color: #1c1d3a;
     color: white;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    padding: 80px 60px;
+    padding: 140px 60px;
     gap: 40px;
 }
 
 .guia-texto {
     flex: 1;
     min-width: 280px;
+    max-width: 800px;
 }
 
 .guia-texto h2 {
@@ -250,9 +262,11 @@ body {
 .guia-texto p {
     font-size: 1.1rem;
     line-height: 1.6;
+    margin-bottom: 16px;
 }
 
 .video-tutorial {
+    z-index: 1000;
     flex: 1;
     min-width: 280px;
 }
@@ -264,16 +278,50 @@ body {
     height: 315px;
 }
 
-/* ojo cerrar abrir*/
-.eye-icon {
-    width: 24px;
-    height: 24px;
-    stroke: #4a148c;
-  }
+ .info {
+   background-color: #4A90E2;
+  color: white;
+  display: flex;
+  justify-content: center;
+  padding: 100px 20px;
+  text-align: center;
+}
+.custom-shape-divider-bottom {
+    position: relative;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+    transform: rotate(180deg);
+}
 
-  .hidden {
-    display: none;
-  }
+.custom-shape-divider-bottom svg {
+    position: relative;
+    display: block;
+    width: calc(136% + 1.3px);
+    height: 166px;
+}
+
+.custom-shape-divider-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.custom-shape-divider-top svg {
+  display: block;
+  width: 100%;
+  height: 120px;
+  transform: rotate(180deg);
+}
+.shape-fill {
+  fill: #4A90E2; /* igual al fondo de .guia */
+}
+
 /*para hacerlo responsive*/
 /* Tablets y pantallas medianas */
 @media (max-width: 768px) {
