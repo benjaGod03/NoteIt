@@ -328,7 +328,9 @@ if($_SERVER['REQUEST_METHOD'] === 'GET' && $_GET["action"] ==='eliminar_notifica
     $stmt->execute();
     $response['success'] = true;
     exit();
+    
 }
+
 // Eliminar grupo (y sus miembros y notas)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'eliminar_grupo') {
     $idGrupo = $_POST['id_grupo'] ?? '';
@@ -370,4 +372,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['
     header('Content-Type: application/json');
     echo json_encode($response);
     exit();
+
 }include 'main.html';
