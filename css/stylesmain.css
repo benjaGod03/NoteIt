@@ -805,3 +805,15 @@ html {
    box-sizing: border-box;
 }
 
+/* Puntito rojo de notificaciones */
+#noti-dot {
+  display: none;
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 10px;
+  height: 10px;
+  background: red;
+  border-radius: 50%;
+  z-index: 2;
+}
