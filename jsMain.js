@@ -143,8 +143,8 @@ function mostrarGruposDesdeBackend(grupos) {
   });
 }
 
-
 function mostrarVistaGrupo(nombreGrupo, idGrupo) {
+  document.getElementById('barra-secciones').style.display = 'none'; // OCULTA la barra
   document.getElementById('notas-grupales').style.display = 'none';
   document.getElementById('vista-grupo').style.display = 'block';
   document.getElementById('nombre-del-grupo').innerText = nombreGrupo;
@@ -241,6 +241,8 @@ function ampliarNota(notaOriginal) {
   cerrarBtn.onclick = () => {
     const nuevoTitulo = titulo.innerText;
     const nuevoContenido = contenido.innerText;
+     // Si el título o contenido han cambiado, actualiza la nota
+    if(nuevoTitulo !== tituloOriginal || nuevoContenido !== contenidoOriginal) {
     notaOriginal.querySelector('.note-title').innerText = nuevoTitulo;
     notaOriginal.querySelector('.note-content').innerText = nuevoContenido;
     overlay.remove();
@@ -270,6 +272,8 @@ function ampliarNota(notaOriginal) {
         }
       })
       .catch(() => alert('Error al conectar con el servidor.'));
+    }
+  overlay.remove();
   };
   notaClonada.appendChild(cerrarBtn);
   notaClonada.appendChild(titulo);
@@ -463,6 +467,7 @@ function volverAGrupos() {
   grupoActivoId = null; // Resetear el grupo activo
   document.getElementById('vista-grupo').style.display = 'none';
   document.getElementById('notas-grupales').style.display = 'block';
+  document.getElementById('barra-secciones').style.display = 'flex'; // MUESTRA la barra
 }
 
 // Mostrar el modal perfil
@@ -560,7 +565,12 @@ function buscarUsuario() {
 
 cargarNotificaciones();
 
-function toggleNotificaciones() {
+function toggleNotificaciones(e) {
+  if (e) e.stopPropagation();
+    const menu = document.getElementById('menu');
+  if (menu && menu.style.display === 'block') {
+    menu.style.display = 'none';
+  }
   const bandeja = document.getElementById('bandejaNotificaciones');
   bandeja.classList.toggle('oculto');
 }
@@ -645,11 +655,24 @@ function cargarNotificaciones() {
         data.notificaciones.forEach(notificacion => {
           agregarNotificacion(notificacion.contenido, notificacion.id, notificacion.idGrupo);
         });
+       // Mostrar el puntito si hay notificaciones
+        const notiDot = document.getElementById('noti-dot');
+        if (notiDot) {
+          notiDot.style.display = data.notificaciones.length > 0 ? 'block' : 'none';
+        }
       } else {
+        // Ocultar el puntito si no hay notificaciones
+        const notiDot = document.getElementById('noti-dot');
+        if (notiDot) notiDot.style.display = 'none';
         console.error('No se pudieron cargar las notificaciones:', data.message);
       }
     })
-    .catch(err => console.error('Error al obtener notificaciones:', err));
+    .catch(err => {
+      // Ocultar el puntito si hay error
+      const notiDot = document.getElementById('noti-dot');
+      if (notiDot) notiDot.style.display = 'none';
+      console.error('Error al obtener notificaciones:', err);
+    });
 }
 
 setInterval(cargarNotificaciones, 10000);
@@ -683,4 +706,31 @@ function eliminarGrupo(idGrupo, elementoGrupo) {
     .catch(() => alert('Error al conectar con el servidor.'));
 }
 
+// Cerrar menú hamburguesa y bandeja de notificaciones al hacer clic fuera de ellos
+document.addEventListener('click', function(e) {
+  // Cerrar menú hamburguesa
+  const menu = document.getElementById('menu');
+  const btnMenu = document.getElementById('btnMenu');
+  if (menu && btnMenu) {
+    if (
+      menu.style.display === 'block' &&
+      !menu.contains(e.target) &&
+      e.target !== btnMenu
+    ) {
+      menu.style.display = 'none';
+    }
+  }
 
+  // Cerrar bandeja de notificaciones
+  const bandeja = document.getElementById('bandejaNotificaciones');
+  const btnNoti = document.getElementById('notificacionesBtn');
+  if (bandeja && btnNoti) {
+    if (
+      !bandeja.classList.contains('oculto') &&
+      !bandeja.contains(e.target) &&
+      e.target !== btnNoti
+    ) {
+      bandeja.classList.add('oculto');
+    }
+  }
+});
