@@ -16,10 +16,11 @@
 
   <!-- Contenedor de acciones (menú hamburguesa + notificaciones) -->
   <div class="acciones-header">
-    <div id="notificacionesBtn" onclick="toggleNotificaciones()" class="notificaciones-boton">
+    <div id="notificacionesBtn" onclick="toggleNotificaciones(event)" class="notificaciones-boton">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#444" viewBox="0 0 24 24">
         <path d="M4 4h16c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2h-5c-.55 0-1 .45-1 1s.45 1 1 1h5a4 4 0 0 0 4-4V6a4 4 0 0 0-4-4H4a4 4 0 0 0-4 4v10a4 4 0 0 0 4 4h5c.55 0 1-.45 1-1s-.45-1-1-1H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zm7 10h2v-2h3l-4-4-4 4h3v2z"/>
       </svg>
+      <span id="noti-dot"></span>
     </div>
     <div class="menu-hamburguesa" id="btnMenu">☰</div>
      <nav class="menu" id="menu">
@@ -30,7 +31,7 @@
         <li><a href="#" onclick="abrirModalPerfil()">Mi perfil</a></li>
         <li><a href="main.php">Inicio</a></li>
         <li><a href="#">Modo claro</a></li>
-        <li><a href="index.php">Cerrar sesión</a></li>
+        <li><a href="index.html">Cerrar sesión</a></li>
     </div>
   </div>
 </header>
@@ -86,7 +87,7 @@
     </div>
   </div>
   <!-- pestañas para cambiar de seccion -->
-  <div class="seccion-selector">
+  <div class="seccion-selector" id="barra-secciones">
     <button onclick="mostrarSeccion('individual')" id="btn-individual" class="btn">Notas individuales</button>
     <button onclick="mostrarSeccion('grupal')" id="btn-grupal" class="btn" >Notas grupales</button>
   </div>
