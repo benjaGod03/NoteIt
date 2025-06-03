@@ -734,3 +734,50 @@ document.addEventListener('click', function(e) {
     }
   }
 });
+
+function mostrarMiembrosGrupo() {
+  // Pedir miembros al backend
+  fetch('main.php?action=miembros_grupo&id_grupo=' + encodeURIComponent(grupoActivoId))
+    .then(res => res.json())
+    .then(data => {
+      const lista = document.getElementById('listaMiembrosGrupo');
+      lista.innerHTML = '';
+     if (data.success && Array.isArray(data.miembros)) {
+        data.miembros.forEach(miembro => {
+          const li = document.createElement('li');
+          li.style.display = 'flex';
+          li.style.alignItems = 'center';
+          li.style.justifyContent = 'space-between';
+
+          // Nombre del miembro
+          const nombreSpan = document.createElement('span');
+          nombreSpan.textContent = miembro.nombre || miembro.usuario || miembro.email || 'Sin nombre';
+          // Botón expulsar
+          const btnExpulsar = document.createElement('button');
+          btnExpulsar.textContent = 'Expulsar';
+          btnExpulsar.className = 'btn-expulsar';
+          btnExpulsar.style.marginLeft = '10px';
+          btnExpulsar.onclick = function() {
+            // Acá después ponés la lógica para expulsar
+            alert('Función de expulsar aún no implementada');
+          };
+
+          li.appendChild(nombreSpan);
+          li.appendChild(btnExpulsar);
+          lista.appendChild(li);
+        });
+      } else {
+        lista.innerHTML = '<li>No se pudieron cargar los miembros.</li>';
+      }
+      document.getElementById('modalMiembrosGrupo').classList.remove('oculto');
+    })
+    .catch(() => {
+      const lista = document.getElementById('listaMiembrosGrupo');
+      lista.innerHTML = '<li>Error al conectar con el servidor.</li>';
+      document.getElementById('modalMiembrosGrupo').classList.remove('oculto');
+    });
+}
+
+function cerrarModalMiembrosGrupo() {
+  document.getElementById('modalMiembrosGrupo').classList.add('oculto');
+}
