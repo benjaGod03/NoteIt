@@ -61,6 +61,7 @@
   <div id="vista-grupo" class="seccion-notas" style="display: none;">
     <div class="botones-superiores">
     <button onclick="volverAGrupos()" class="btn">← Volver a grupos</button>
+      <button class="btn" onclick="mostrarMiembrosGrupo()">Miembros</button>
       </div>
       <div class="grupo-header">
     <h2 id="nombre-del-grupo">Nombre del grupo</h2>
@@ -126,6 +127,17 @@
       <p id="mensajeBusqueda" style="margin-top: 15px; color: red;"></p>
     </div>
   </div>
+
+        <!-- Modal de miembros del grupo -->
+<div id="modalMiembrosGrupo" class="modal oculto">
+  <div class="modal-contenido">
+    <span class="cerrar-modal" onclick="cerrarModalMiembrosGrupo()">×</span>
+    <h3>Miembros del grupo</h3>
+    <ul id="listaMiembrosGrupo">
+      <!-- Aca se cargan los miembros por JS -->
+    </ul>
+  </div>
+</div>
 
 <div id="bandejaNotificaciones" class="bandeja-notificaciones oculto">
     <h4>Notificaciones</h4>
