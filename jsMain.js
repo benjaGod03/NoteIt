@@ -53,11 +53,13 @@ function mostrarNotasDesdeBackend(notas, id_grupo = null) {
     nuevaNota.classList.add('note-box');
     nuevaNota.setAttribute('data-uuid', nota.uuid);
     let fechaTexto = nota.fecha ? new Date(nota.fecha).toLocaleString() : '';
+    if (id_grupo = null){editor=null}
+    else {editor = nota.editor}
     nuevaNota.innerHTML = `
             <h3 class="note-title">${nota.titulo}</h3>
             <p class="note-content">${nota.contenido}</p>
             <div class="note-footer">
-              <span class="note-date">${fechaTexto}</span>
+              <span class="note-date">${fechaTexto}${editor}</span>
               <button class="delete-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#76448a" stroke-width="2">
             <path d="M3 6h18M5 6l1 16h12l1-16H5z" />
@@ -573,6 +575,7 @@ function toggleNotificaciones(e) {
   }
   const bandeja = document.getElementById('bandejaNotificaciones');
   bandeja.classList.toggle('oculto');
+  cargarNotificaciones(); // Cargar notificaciones al abrir la bandeja
 }
 
 function agregarNotificacion(mensaje, id, idGrupo) {
@@ -675,7 +678,6 @@ function cargarNotificaciones() {
     });
 }
 
-setInterval(cargarNotificaciones, 10000);
 
 function verificarNotificacionesVacias() {
   const bandeja = document.getElementById("bandejaNotificaciones");
