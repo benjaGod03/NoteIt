@@ -371,6 +371,77 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['
     }
     header('Content-Type: application/json');
     echo json_encode($response);
-    exit();
+    exit();}
 
-}include 'main.html';
+if($_SERVER['REQUEST_METHOD'] === 'GET' && isset ( $_GET['action'] ) && $_GET['action'] === 'miembros_grupo') {
+    $idGrupo = $_GET['id_grupo'] ?? '';
+    $response = ['success' => false, 'miembros' => [], 'message' => ''];
+    if (empty($idGrupo)) {
+        $response['message'] = 'ID de grupo es obligatorio.';
+    } else {
+        try {
+            $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo->exec("SET time_zone = '-03:00'");
+            $query = "SELECT miembro FROM grupo_miembros WHERE id_grupo = :idGrupo";
+            $stmt = $pdo->prepare($query);
+            $stmt->bindParam(':idGrupo', $idGrupo);
+            $stmt->execute();
+            $miembros = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if ($miembros) {
+                $response['success'] = true;
+                $response['miembros'] = $miembros;
+            } else {
+                $response['message'] = 'No se encontraron miembros para este grupo.';
+            }
+        } catch (PDOException $e) {
+            $response['message'] = 'Error al obtener los miembros del grupo: ' . $e->getMessage();
+        }
+    }
+    header('Content-Type: application/json');
+    echo json_encode($response);
+    exit();}
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'expulsar_miembro') {
+    $correo = $_SESSION['correo'] ?? '';
+    $idGrupo = $_GET['id_grupo'] ?? '';
+    $miembro = $_GET['miembro'] ?? '';
+    $response = ['success' => false, 'message' => ''];
+    if (empty($correo) || empty($idGrupo) || empty($miembro)) {
+        $response['message'] = 'Faltan datos para expulsar al miembro.';
+    } else {
+        try {
+            $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo->exec("SET time_zone = '-03:00'");
+            // Solo el creador del grupo puede expulsar miembros
+            $stmt = $pdo->prepare("SELECT creador FROM grupos WHERE id = :idGrupo");
+            $stmt->bindParam(':idGrupo', $idGrupo);
+            $stmt->execute();
+            $grupo = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$grupo || $grupo['creador'] !== $correo) {
+                $response['message'] = 'Solo el creador puede expulsar miembros.';
+            } else {
+                // Eliminar al miembro del grupo
+                $stmtMiembro = $pdo->prepare("DELETE FROM grupo_miembros WHERE id_grupo = :idGrupo AND miembro = :miembro");
+                $stmtMiembro->bindParam(':idGrupo', $idGrupo);
+                $stmtMiembro->bindParam(':miembro', $miembro);
+                if ($stmtMiembro->execute()) {
+                    if ($stmtMiembro->rowCount() > 0) {
+                        $response['success'] = true;
+                    } else {
+                        $response['message'] = 'El miembro no pertenece a este grupo.';
+                    }
+                } else {
+                    $response['message'] = 'Error al expulsar al miembro.';
+                }
+            }
+        } catch (PDOException $e) {
+            $response['message'] = 'Error al expulsar al miembro: ' . $e->getMessage();
+        }
+    }
+    header('Content-Type: application/json');
+    echo json_encode($response);
+    exit();
+}
+include 'main.html';
