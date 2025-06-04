@@ -751,7 +751,7 @@ function mostrarMiembrosGrupo() {
 
           // Nombre del miembro
           const nombreSpan = document.createElement('span');
-          nombreSpan.textContent = miembro.nombre || miembro.usuario || miembro.email || 'Sin nombre';
+          nombreSpan.textContent = miembro.miembro;
           // Botón expulsar
           const btnExpulsar = document.createElement('button');
           btnExpulsar.textContent = 'Expulsar';
@@ -759,7 +759,18 @@ function mostrarMiembrosGrupo() {
           btnExpulsar.style.marginLeft = '10px';
           btnExpulsar.onclick = function() {
             // Acá después ponés la lógica para expulsar
-            alert('Función de expulsar aún no implementada');
+            if (!confirm('¿Seguro que quieres expulsar este miembro?')) return;
+            fetch('main.php?action=expulsar_miembro&id_grupo=' + encodeURIComponent(grupoActivoId) + '&miembro=' + encodeURIComponent(miembro.miembro))
+              .then(res => res.json())
+              .then(data => {
+                if (data.success) {
+                  li.remove(); // Elimina el elemento de la lista
+                } else {
+                  alert('Error al expulsar al miembro: ' + (data.message || 'Error desconocido'));
+                }
+              })
+              .catch(() => alert('Error al conectar con el servidor.'));
+
           };
 
           li.appendChild(nombreSpan);
