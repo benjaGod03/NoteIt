@@ -54,6 +54,7 @@ if (
     // Determinar autor: si viene id_grupo, es nota de grupo; si no, es nota de usuario
     if (isset($_POST['id_grupo']) && !empty($_POST['id_grupo'])) {
         $autor = $_POST['id_grupo'];
+        $editor = $_SESSION['usuario'] ?? '';
     } else {
         $autor = $_SESSION['correo'] ?? '';
     }
@@ -75,24 +76,26 @@ if (
             $rowCheck = $stmtCheck->fetch(PDO::FETCH_ASSOC);
             if ($rowCheck && $rowCheck['existe'] > 0) {
                 // Si existe, actualizar la nota y la fecha
-                $query = "UPDATE notas SET titulo = :titulo, contenido = :contenido, fecha = NOW() WHERE uuid = :uuid AND autor = :autor";
+                $query = "UPDATE notas SET titulo = :titulo, contenido = :contenido, fecha = NOW(),editor=:editor WHERE uuid = :uuid AND autor = :autor";
                 $stmt = $pdo->prepare($query);
                 $stmt->bindParam(':titulo', $titulo);
                 $stmt->bindParam(':contenido', $contenido);
                 $stmt->bindParam(':uuid', $uuid);
                 $stmt->bindParam(':autor', $autor);
+                $stmt->bindParam(':editor', $editor);
                 $stmt->execute();
                 $response['success'] = true;
                 $response['message'] = 'Nota actualizada correctamente.';
                 $response['uuid'] = $uuid;
             } else {
                 // Si no existe, insertar la nueva nota
-                $query = "INSERT INTO notas (uuid, titulo, contenido, autor) VALUES (:uuid, :titulo, :contenido, :autor)";
+                $query = "INSERT INTO notas (uuid, titulo, contenido, autor, editor) VALUES (:uuid, :titulo, :contenido, :autor, :editor)";
                 $stmt = $pdo->prepare($query);
                 $stmt->bindParam(':uuid', $uuid);
                 $stmt->bindParam(':titulo', $titulo);
                 $stmt->bindParam(':contenido', $contenido);
                 $stmt->bindParam(':autor', $autor);
+                $stmt->bindParam(':editor', $editor);
                 $stmt->execute();
                 $response['success'] = true;
                 $response['message'] = 'Nota guardada correctamente.';
@@ -200,7 +203,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             // Establecer zona horaria de MySQL a GMT-3 (Argentina)
             $pdo->exec("SET time_zone = '-03:00'");
-            $query = "SELECT uuid, titulo, contenido, fecha FROM notas WHERE autor = :autor ORDER BY fecha DESC";
+            $query = "SELECT uuid, titulo, contenido, fecha, editor FROM notas WHERE autor = :autor ORDER BY fecha DESC";
             $stmt = $pdo->prepare($query);
             $stmt->bindParam(':autor', $autor);
             $stmt->execute();
