@@ -237,47 +237,87 @@ function ampliarNota(notaOriginal) {
   contenido.contentEditable = true;
   contenido.innerText = contenidoOriginal;
   const notaUuid = notaOriginal.getAttribute('data-uuid');
+
+  // Botón cerrar (X)
   const cerrarBtn = document.createElement('button');
   cerrarBtn.className = 'cerrar-btn';
   cerrarBtn.innerHTML = '✖';
   cerrarBtn.onclick = () => {
+    overlay.remove(); // Solo cierra, no guarda
+  };
+
+  // Botón guardar 
+  const guardarBtn = document.createElement('button');
+  guardarBtn.className = 'guardar-btn';
+  guardarBtn.title = 'Guardar nota';
+  guardarBtn.innerHTML = `<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M17 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10zm0 2H7v14h10V5zm-5 2a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm1 4v6h-2v-6h2z"/></svg>`;
+  guardarBtn.onclick = () => {
     const nuevoTitulo = titulo.innerText;
     const nuevoContenido = contenido.innerText;
-     // Si el título o contenido han cambiado, actualiza la nota
-    if(nuevoTitulo !== tituloOriginal || nuevoContenido !== contenidoOriginal) {
-    notaOriginal.querySelector('.note-title').innerText = nuevoTitulo;
-    notaOriginal.querySelector('.note-content').innerText = nuevoContenido;
-    overlay.remove();
-    let body = `accion=guardar_nota&uuid=${encodeURIComponent(notaUuid)}&titulo=${encodeURIComponent(nuevoTitulo)}&contenido=${encodeURIComponent(nuevoContenido)}`;
-    // Detectar si es nota grupal
-    if (grupoActivoId && !isNaN(grupoActivoId)) {
-      body += `&id_grupo=${encodeURIComponent(grupoActivoId)}`;
-    }
-    fetch('main.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          if (data.uuid) {
-            notaOriginal.setAttribute('data-uuid', data.uuid);
-          }
-          const fechaSpan = notaOriginal.querySelector('.note-date');
-          if (fechaSpan) {
-            const ahora = new Date();
-            fechaSpan.textContent = ahora.toLocaleString();
-          }
-        } else {
-          alert('Error: ' + data.message);
-        }
+    // Si el título o contenido han cambiado, actualiza la nota
+    if (nuevoTitulo !== tituloOriginal || nuevoContenido !== contenidoOriginal) {
+      notaOriginal.querySelector('.note-title').innerText = nuevoTitulo;
+      notaOriginal.querySelector('.note-content').innerText = nuevoContenido;
+      overlay.remove();
+      let body = `accion=guardar_nota&uuid=${encodeURIComponent(notaUuid)}&titulo=${encodeURIComponent(nuevoTitulo)}&contenido=${encodeURIComponent(nuevoContenido)}`;
+      // Detectar si es nota grupal
+      if (grupoActivoId && !isNaN(grupoActivoId)) {
+        body += `&id_grupo=${encodeURIComponent(grupoActivoId)}`;
+      }
+      fetch('main.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body
       })
-      .catch(() => alert('Error al conectar con el servidor.'));
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            if (data.uuid) {
+              notaOriginal.setAttribute('data-uuid', data.uuid);
+            }
+            const fechaSpan = notaOriginal.querySelector('.note-date');
+            if (fechaSpan) {
+              const ahora = new Date();
+              fechaSpan.textContent = ahora.toLocaleString();
+            }
+          } else {
+            alert('Error: ' + data.message);
+          }
+        })
+        .catch(() => alert('Error al conectar con el servidor.'));
     }
-  overlay.remove();
   };
-  notaClonada.appendChild(cerrarBtn);
+
+  // Botón descargar 
+  const descargarBtn = document.createElement('button');
+  descargarBtn.className = 'descargar-btn';
+  descargarBtn.title = 'Descargar nota';
+  descargarBtn.innerHTML = `<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 16l4-5h-3V4h-2v7H8l4 5zm-8 2v2h16v-2H4z"/></svg>`;
+  descargarBtn.onclick = () => {
+    const texto = `Título: ${titulo.innerText}\n\n${contenido.innerText}`;
+    const blob = new Blob([texto], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = (titulo.innerText.trim() || 'nota') + '.txt';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 0);
+  };
+
+  // Agregá los botones arriba de la nota
+  const acciones = document.createElement('div');
+  acciones.style.display = 'flex';
+  acciones.style.justifyContent = 'flex-end';
+  acciones.style.gap = '8px';
+  acciones.appendChild(descargarBtn);
+  acciones.appendChild(guardarBtn);
+  acciones.appendChild(cerrarBtn);
+
+  notaClonada.appendChild(acciones);
   notaClonada.appendChild(titulo);
   notaClonada.appendChild(contenido);
   overlay.appendChild(notaClonada);
