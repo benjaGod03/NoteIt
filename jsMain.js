@@ -267,6 +267,9 @@ function ampliarNota(notaOriginal) {
   <path d="M12 6v6l-3 3"/>
   <path d="M8 3a9 9 0 1 0 4 0"/>
 </svg>`;
+  historialBtn.onclick = () => {
+    mostrarHistorialNota(notaUuid);
+  };
 
 
   // Botón cerrar 
@@ -354,6 +357,41 @@ function ampliarNota(notaOriginal) {
   notaClonada.appendChild(contenido);
   overlay.appendChild(notaClonada);
   document.body.appendChild(overlay);
+}
+
+// Mostrar historial de una nota en el modal
+function mostrarHistorialNota(uuid) {
+  fetch('main.php?action=historial_nota&uuid=' + encodeURIComponent(uuid))
+    .then(res => res.json())
+    .then(data => {
+      if (data.success && Array.isArray(data.historial)) {
+        const contenedor = document.getElementById('historialNotasContenedor');
+        contenedor.innerHTML = '';
+        data.historial.forEach(version => {
+          const variante = document.createElement('div');
+          variante.className = 'note-box';
+          let fechaTexto = version.fecha ? new Date(version.fecha).toLocaleString() : '';
+          let editor = version.editor || '';
+          variante.style.background = colorPorEditor(editor);
+          variante.innerHTML = `
+            <h3 class="note-title">${version.titulo}</h3>
+            <p class="note-content">${version.contenido}</p>
+            <div class="note-footer">
+              <span class="note-date">${fechaTexto}${editor}</span>
+            </div>
+          `;
+          contenedor.appendChild(variante);
+        });
+        document.getElementById('modalHistorialNota').classList.remove('oculto');
+      } else {
+        alert('No hay historial disponible para esta nota.');
+      }
+    })
+    .catch(() => alert('Error al obtener el historial de la nota.'));
+}
+
+function cerrarModalHistorialNota() {
+  document.getElementById('modalHistorialNota').classList.add('oculto');
 }
 
 function generarUUID() {

@@ -57,6 +57,7 @@ if (
         $editor = $_SESSION['usuario'] ?? '';
     } else {
         $autor = $_SESSION['correo'] ?? '';
+        $editor = ' ';
     }
     $response = ['success' => false, 'message' => ''];
 
@@ -75,7 +76,15 @@ if (
             $stmtCheck->execute();
             $rowCheck = $stmtCheck->fetch(PDO::FETCH_ASSOC);
             if ($rowCheck && $rowCheck['existe'] > 0) {
-                // Si existe, actualizar la nota y la fecha
+                // Si existe, actualizar la nota y la fecha, ademas guardar la nota en el historial
+                if($editor != ' '){ 
+                $queryhistorial = "INSERT INTO notas_historial (uuid, titulo, contenido, autor, fecha,editor) 
+                SELECT uuid, titulo, contenido, autor,fecha,editor  FROM notas WHERE uuid = :uuid AND autor = :autor";
+                $stmtHistorial = $pdo->prepare($queryhistorial);
+                $stmtHistorial->bindParam(':uuid', $uuid);
+                $stmtHistorial->bindParam(':autor', $autor);
+                $stmtHistorial->execute();
+                }
                 $query = "UPDATE notas SET titulo = :titulo, contenido = :contenido, fecha = NOW(),editor=:editor WHERE uuid = :uuid AND autor = :autor";
                 $stmt = $pdo->prepare($query);
                 $stmt->bindParam(':titulo', $titulo);
@@ -441,6 +450,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
             }
         } catch (PDOException $e) {
             $response['message'] = 'Error al expulsar al miembro: ' . $e->getMessage();
+        }
+    }
+    header('Content-Type: application/json');
+    echo json_encode($response);
+    exit();
+}
+
+//Obtener todas las notas del historial de una nota
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'historial_nota'){
+    $uuid = $_GET['uuid'] ?? '';
+    $response = ['success' => false, 'historial' => [], 'message' => ''];
+    if (empty($uuid)) {
+        $response['message'] = 'UUID de la nota es obligatorio.';
+    } else {
+        try {
+            $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo->exec("SET time_zone = '-03:00'");
+            $query = "SELECT * FROM notas_historial WHERE uuid = :uuid ORDER BY fecha DESC";
+            $stmt = $pdo->prepare($query);
+            $stmt->bindParam(':uuid', $uuid);
+            $stmt->execute();
+            $historial = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if ($historial) {
+                $response['success'] = true;
+                $response['historial'] = $historial;
+            } else {
+                $response['message'] = 'No se encontró historial para esta nota.';
+            }
+        } catch (PDOException $e) {
+            $response['message'] = 'Error al obtener el historial de la nota: ' . $e->getMessage();
         }
     }
     header('Content-Type: application/json');
