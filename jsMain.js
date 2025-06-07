@@ -37,6 +37,18 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
+function colorPorEditor(editor) {
+  // Genera un color pastel a partir del nombre del editor
+  let hash = 0;
+  for (let i = 0; i < editor.length; i++) {
+    hash = editor.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  // Generar color pastel
+  const h = Math.abs(hash) % 360;
+  return `hsl(${h}, 70%, 85%)`;
+}
+
+
 function mostrarNotasDesdeBackend(notas, id_grupo = null) {
   // Selecciona el contenedor correcto según el contexto
   let contenedor;
@@ -52,23 +64,30 @@ function mostrarNotasDesdeBackend(notas, id_grupo = null) {
     const nuevaNota = document.createElement('div');
     nuevaNota.classList.add('note-box');
     nuevaNota.setAttribute('data-uuid', nota.uuid);
+
     let fechaTexto = nota.fecha ? new Date(nota.fecha).toLocaleString() : '';
-    if (id_grupo = null){editor=null}
-    else {editor = nota.editor}
-    nuevaNota.innerHTML = `
-            <h3 class="note-title">${nota.titulo}</h3>
-            <p class="note-content">${nota.contenido}</p>
-            <div class="note-footer">
-              <span class="note-date">${fechaTexto}${editor}</span>
-              <button class="delete-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#76448a" stroke-width="2">
+    let editor = (id_grupo !== null) ? nota.editor : null;
+
+     // Asignar color si hay editor
+    if (editor) {
+      nuevaNota.style.background = colorPorEditor(editor);
+    }
+    
+    
+     nuevaNota.innerHTML = `
+      <h3 class="note-title">${nota.titulo}</h3>
+      <p class="note-content">${nota.contenido}</p>
+      <div class="note-footer">
+        <span class="note-date">${fechaTexto}${editor ? ' - ' + editor : ''}</span>
+        <button class="delete-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#76448a" stroke-width="2">
             <path d="M3 6h18M5 6l1 16h12l1-16H5z" />
             <path d="M10 11v6M14 11v6" />
-            <path d="M9 6V4a1 1 0 0 1 1-1h4a 1 1 0 0 1 1 1v2" />
-            </svg>
-              </button>
-            </div>
-        `;
+            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+          </svg>
+        </button>
+      </div>
+    `;
     nuevaNota.querySelector('.delete-btn').addEventListener('click', function (e) {
       e.stopPropagation();
       const uuid = nuevaNota.getAttribute('data-uuid');
@@ -238,7 +257,19 @@ function ampliarNota(notaOriginal) {
   contenido.innerText = contenidoOriginal;
   const notaUuid = notaOriginal.getAttribute('data-uuid');
 
-  // Botón cerrar (X)
+  // Botón historial
+  const historialBtn = document.createElement('button');
+  historialBtn.className = 'historial-btn';
+  historialBtn.title = 'Ver historial';
+  // SVG de reloj con flecha hacia la izquierda
+  historialBtn.innerHTML = `<svg width="22" height="22" fill="none" stroke="#444" stroke-width="2" viewBox="0 0 24 24">
+  <circle cx="12" cy="12" r="10"/>
+  <path d="M12 6v6l-3 3"/>
+  <path d="M8 3a9 9 0 1 0 4 0"/>
+</svg>`;
+
+
+  // Botón cerrar 
   const cerrarBtn = document.createElement('button');
   cerrarBtn.className = 'cerrar-btn';
   cerrarBtn.innerHTML = '✖';
@@ -246,7 +277,7 @@ function ampliarNota(notaOriginal) {
     overlay.remove(); // Solo cierra, no guarda
   };
 
-  // Botón guardar 
+  // Botón guardar
   const guardarBtn = document.createElement('button');
   guardarBtn.className = 'guardar-btn';
   guardarBtn.title = 'Guardar nota';
@@ -313,6 +344,7 @@ function ampliarNota(notaOriginal) {
   acciones.style.display = 'flex';
   acciones.style.justifyContent = 'flex-end';
   acciones.style.gap = '8px';
+  acciones.appendChild(historialBtn);
   acciones.appendChild(descargarBtn);
   acciones.appendChild(guardarBtn);
   acciones.appendChild(cerrarBtn);
@@ -784,12 +816,14 @@ function mostrarMiembrosGrupo() {
     .then(data => {
       const lista = document.getElementById('listaMiembrosGrupo');
       lista.innerHTML = '';
+      lista.className = 'listaMiembrosGrupo';
      if (data.success && Array.isArray(data.miembros)) {
         data.miembros.forEach(miembro => {
           const li = document.createElement('li');
           li.style.display = 'flex';
-          li.style.alignItems = 'center';
+          li.style.alignItems = 'left';
           li.style.justifyContent = 'space-between';
+          
 
           // Nombre del miembro
           const nombreSpan = document.createElement('span');
@@ -797,7 +831,7 @@ function mostrarMiembrosGrupo() {
           // Botón expulsar
           const btnExpulsar = document.createElement('button');
           btnExpulsar.textContent = 'Expulsar';
-          btnExpulsar.className = 'btn-expulsar';
+          btnExpulsar.className = 'btn';
           btnExpulsar.style.marginLeft = '10px';
           btnExpulsar.onclick = function() {
             // Acá después ponés la lógica para expulsar
