@@ -9,8 +9,8 @@ body {
   animation: gradientShift 15s linear infinite;
   min-height: 100vh;
 }
-/* keyframes es para crear animaciones, lo uso para q se mueva el fondo*/
 
+/* keyframes es para crear animaciones, lo uso para q se mueva el fondo*/
 @keyframes gradientShift {
   0% {
     background-position: 0% 50%;
@@ -166,6 +166,7 @@ body {
     line-height: 50px;
     text-decoration: none;
 }
+
 .boton-contenedor {
   display: flex;
   justify-content: center;
@@ -320,6 +321,10 @@ body {
 }
 .shape-fill {
   fill: #4A90E2; /* igual al fondo de .guia */
+}
+
+.note-content {
+  white-space: pre-wrap;
 }
 
 /*para hacerlo responsive*/

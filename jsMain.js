@@ -34,9 +34,15 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     })
     .catch(err => console.error('Error al obtener grupos:', err));
+
+    //Modo oscuro (no funciona en el host solo de forma local no entiendo)
+    window.toggleDarkMode = function () {
+    document.body.classList.toggle('dark-mode');
+    const modoActual = document.body.classList.contains('dark-mode') ? 'Modo claro' : 'Modo oscuro';
+    document.getElementById('modoToggleBtn').textContent = modoActual;
+  };
 });
-
-
+ 
 function colorPorEditor(editor) {
   // Genera un color pastel a partir del nombre del editor
   let hash = 0;
@@ -259,13 +265,12 @@ function ampliarNota(notaOriginal) {
 
   // Botón historial
   const historialBtn = document.createElement('button');
-  historialBtn.className = 'historial-btn';
+  historialBtn.className = 'nota-btn';
   historialBtn.title = 'Ver historial';
   // SVG de reloj con flecha hacia la izquierda
-  historialBtn.innerHTML = `<svg width="22" height="22" fill="none" stroke="#444" stroke-width="2" viewBox="0 0 24 24">
-  <circle cx="12" cy="12" r="10"/>
-  <path d="M12 6v6l-3 3"/>
-  <path d="M8 3a9 9 0 1 0 4 0"/>
+  historialBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg"  fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+  <circle cx="12" cy="12" r="9" />
+  <path d="M12 7v5l3 2" />
 </svg>`;
   historialBtn.onclick = () => {
     mostrarHistorialNota(notaUuid);
@@ -274,7 +279,7 @@ function ampliarNota(notaOriginal) {
 
   // Botón cerrar 
   const cerrarBtn = document.createElement('button');
-  cerrarBtn.className = 'cerrar-btn';
+  cerrarBtn.className = 'nota-btn';
   cerrarBtn.innerHTML = '✖';
   cerrarBtn.onclick = () => {
      const nuevoTitulo = titulo.innerText;
@@ -317,9 +322,9 @@ function ampliarNota(notaOriginal) {
 
   // Botón descargar 
   const descargarBtn = document.createElement('button');
-  descargarBtn.className = 'descargar-btn';
+  descargarBtn.className = 'nota-btn';
   descargarBtn.title = 'Descargar nota';
-  descargarBtn.innerHTML = `<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 16l4-5h-3V4h-2v7H8l4 5zm-8 2v2h16v-2H4z"/></svg>`;
+  descargarBtn.innerHTML = `<svg  fill="currentColor" viewBox="0 0 24 24"><path d="M12 16l4-5h-3V4h-2v7H8l4 5zm-8 2v2h16v-2H4z"/></svg>`;
   descargarBtn.onclick = () => {
     const texto = `Título: ${titulo.innerText}\n\n${contenido.innerText}`;
     const blob = new Blob([texto], { type: 'text/plain' });
