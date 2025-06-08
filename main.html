@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="css/stylesmain.css">
 </head>
 
-
+<body>
 <header class="header">
   <div class="logo">
     <img src="images/iconoNoteIt.png" alt="Icono NoteIt" class="logo-icon">
@@ -29,11 +29,13 @@
       <div class="perfil-menu">
         <img src="images/descarga.svg" alt="Foto de perfil" class="foto-perfil" />
       </div>
-      <ul>
-        <li><a href="#" onclick="abrirModalPerfil()">Mi perfil</a></li>
-        <li><a href="main.php">Inicio</a></li>
-        <li><a href="#">Modo claro</a></li>
-        <li><a href="index.html">Cerrar sesión</a></li>
+        <ul>
+          <li><a href="#" onclick="abrirModalPerfil()">Mi perfil</a></li>
+          <li><a href="main.php">Inicio</a></li>
+          <li><a href="#" id="modoToggleBtn" onclick="toggleDarkMode()">Modo oscuro</a></li>
+          <li><a href="index.html">Cerrar sesión</a></li>
+        </ul>
+      </nav>
     </div>
   </div>
 </header>
