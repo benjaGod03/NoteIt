@@ -9,7 +9,6 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  
   overflow-x: hidden;
 }
 
@@ -27,7 +26,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 40px;
+  padding: 15px 40px;
   background-color: rgba(255, 255, 255, 0.2);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
   position: sticky;
@@ -37,11 +36,12 @@ body {
   border-radius: 25px;
   position: relative;
   box-sizing: border-box;
+  z-index: 1;
 }
 .acciones-header {
   display: flex;
   align-items: center;
-  gap: 20px; /* o lo que prefieras */
+  gap: 20px;
 }
 
 .logo h1 {
@@ -101,6 +101,8 @@ body {
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
   grid-auto-rows: 180px; /* Altura fija para las filas */
+  scrollbar-width: thin;
+  scrollbar-color: #66b8e6 #dff3f7;
 }
 
 /* boton para agregar nota */
@@ -188,6 +190,14 @@ body {
   -webkit-line-clamp: 4;
   line-clamp: 4;
   -webkit-box-orient: vertical;
+  white-space: normal;
+}
+
+.ampliada .note-content {
+  white-space: pre-wrap;
+  overflow: auto;
+  text-overflow: unset;
+  display: block;
 }
 
 /* borrar nota tachito*/
@@ -346,6 +356,57 @@ body {
   margin-bottom: 16px;
 }
 
+/*miembros de los grupos*/
+.modalMiembros .modal-contenido{
+  width: 450px;
+  background-color: rgba(102, 184, 230, 0.6);
+  border: 1px solid rgba(102, 184, 230, 0.4);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(102, 184, 230, 0.3);
+  padding: 16px;
+  text-align: left;
+}
+
+.listaMiembrosGrupo {
+  margin-top: 25px;
+  list-style: none;      
+  padding: 0;
+}
+
+.miembro-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+  border-bottom: 1px solid #66b8e6; 
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+.miembro-email{
+  flex: 1;
+  color: #ecf0f1;
+  font-family: 'Poppins', sans-serif;    
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(102, 184, 230, 0.5);
+  font-size: 0.95rem;
+  line-height: 1.4;
+  max-width: 100%;
+  padding: 4px 8px;
+}
+.modalMiembros .btn {
+  right: 5px;
+  margin: 10px;
+  background-color: rgba(102, 184, 230, 0.85);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(102, 184, 230, 0.4);
+}
+.modalMiembros .btn:hover {
+  background-color: #2980b9;
+}
+
+
 /* Estilos del input */
 .input {
   width: 100%;
@@ -461,10 +522,12 @@ body {
   color: #ffffffcc;
   font-weight: 600;
   font-size: 18px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 1);
   user-select: none;     
   margin: 0;
   padding: 0;
   z-index: 1;
+  letter-spacing: 1px;
 }
 
 /* Botón de cerrar (X) */
@@ -478,6 +541,39 @@ body {
   transition: color 0.2s ease;
 }
 
+/*historial*/
+
+.modalhistorialnota .modal-contenido {
+  width: 520px;
+  max-height: 80vh;
+  overflow-y: hidden;
+  background: #66b8e6; 
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+  font-family: 'Poppins', sans-serif;
+}
+#historialNotasContenedor.wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  background: fixed; 
+  border: none;
+  gap: 10px;
+  width: 92%;
+  margin-top: 10px;
+  padding: 10px;
+  height: 80vh;
+  overflow-y: scroll;
+  color: #1a3a4a;
+  font-size: 0.95rem;
+  border-radius: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: #66b8e6 #e0f6fb;
+}
+.modalhistorialnota .modal-header{
+  padding: 5px;
+  font-size: 14px;
+}
 #modalPerfil .modal-contenido {
   padding: 48px 20px 20px;
   text-align: center;
@@ -547,6 +643,8 @@ body {
 }
 
 .notificaciones-boton {
+  position: relative; 
+  display: inline-block;
   display: flex;
   cursor: pointer;
   z-index: 1100;
@@ -556,15 +654,13 @@ body {
 }
 .notificaciones-boton svg {
   fill: white;
-  top: 10px;
-  width: 28px;
-  height: 28px;
+  top: 12px;
   transition: transform 0.2s ease;
 }
 
 .bandeja-notificaciones{
   position: absolute; 
-  top: 85px;
+  top: 79px;
   right: 20px; 
   background: linear-gradient(135deg, #5946d2, #4cb0e6);
   border: 1px solid #aab4ff;
@@ -653,7 +749,7 @@ body {
 
 .menu {
   position: fixed;
-  top: 85px;
+  top: 79px;
   right: 10px;
   width: 220px;
   background: linear-gradient(135deg, #6c5ce7, #66b8e6);
@@ -807,13 +903,13 @@ html {
 
 /* Puntito rojo de notificaciones */
 #noti-dot {
-  display: none;
   position: absolute;
-  top: 2px;
-  right: 2px;
+  top: -4px;
+  right: -4px;
   width: 10px;
   height: 10px;
-  background: red;
+  background-color: red;
   border-radius: 50%;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
   z-index: 2;
 }
