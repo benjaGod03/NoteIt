@@ -76,7 +76,7 @@ function mostrarNotasDesdeBackend(notas, id_grupo = null) {
     
      nuevaNota.innerHTML = `
       <h3 class="note-title">${nota.titulo}</h3>
-      <p class="note-content">${nota.contenido}</p>
+      <p class="note-content">${nota.contenido.replace(/\n/g, '<br>')}</p>
       <div class="note-footer">
         <span class="note-date">${fechaTexto}${editor ? ' - ' + editor : ''}</span>
         <button class="delete-btn">
@@ -277,16 +277,7 @@ function ampliarNota(notaOriginal) {
   cerrarBtn.className = 'cerrar-btn';
   cerrarBtn.innerHTML = '✖';
   cerrarBtn.onclick = () => {
-    overlay.remove(); // Solo cierra, no guarda
-  };
-
-  // Botón guardar
-  const guardarBtn = document.createElement('button');
-  guardarBtn.className = 'guardar-btn';
-  guardarBtn.title = 'Guardar nota';
-  guardarBtn.innerHTML = `<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M17 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10zm0 2H7v14h10V5zm-5 2a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm1 4v6h-2v-6h2z"/></svg>`;
-  guardarBtn.onclick = () => {
-    const nuevoTitulo = titulo.innerText;
+     const nuevoTitulo = titulo.innerText;
     const nuevoContenido = contenido.innerText;
     // Si el título o contenido han cambiado, actualiza la nota
     if (nuevoTitulo !== tituloOriginal || nuevoContenido !== contenidoOriginal) {
@@ -320,7 +311,9 @@ function ampliarNota(notaOriginal) {
         })
         .catch(() => alert('Error al conectar con el servidor.'));
     }
+    overlay.remove();
   };
+
 
   // Botón descargar 
   const descargarBtn = document.createElement('button');
@@ -349,7 +342,6 @@ function ampliarNota(notaOriginal) {
   acciones.style.gap = '8px';
   acciones.appendChild(historialBtn);
   acciones.appendChild(descargarBtn);
-  acciones.appendChild(guardarBtn);
   acciones.appendChild(cerrarBtn);
 
   notaClonada.appendChild(acciones);
@@ -858,19 +850,18 @@ function mostrarMiembrosGrupo() {
      if (data.success && Array.isArray(data.miembros)) {
         data.miembros.forEach(miembro => {
           const li = document.createElement('li');
-          li.style.display = 'flex';
-          li.style.alignItems = 'left';
-          li.style.justifyContent = 'space-between';
+          li.className ='miembros-item';
           
 
           // Nombre del miembro
           const nombreSpan = document.createElement('span');
+          nombreSpan.className = 'miembro-email';
           nombreSpan.textContent = miembro.miembro;
+          nombreSpan.title = miembro.miembro;
           // Botón expulsar
           const btnExpulsar = document.createElement('button');
           btnExpulsar.textContent = 'Expulsar';
           btnExpulsar.className = 'btn';
-          btnExpulsar.style.marginLeft = '10px';
           btnExpulsar.onclick = function() {
             // Acá después ponés la lógica para expulsar
             if (!confirm('¿Seguro que quieres expulsar este miembro?')) return;
@@ -906,3 +897,30 @@ function mostrarMiembrosGrupo() {
 function cerrarModalMiembrosGrupo() {
   document.getElementById('modalMiembrosGrupo').classList.add('oculto');
 }
+
+// Cerrar modales al hacer clic fuera de ellos
+window.addEventListener('click', function(e) {
+  // Modal Miembros Grupo
+  const modalMiembros = document.getElementById('modalMiembrosGrupo');
+  if (modalMiembros && !modalMiembros.classList.contains('oculto')) {
+    if (e.target === modalMiembros) {
+      cerrarModalMiembrosGrupo();
+    }
+  }
+
+  // Modal Agregar Amigo
+  const modalAgregar = document.getElementById('modalAgregarAmigo');
+  if (modalAgregar && !modalAgregar.classList.contains('oculto')) {
+    if (e.target === modalAgregar) {
+      cerrarModalAgregarAmigo();
+    }
+  }
+
+  // Modal Historial Nota
+  const modalHistorial = document.getElementById('modalHistorialNota');
+  if (modalHistorial && !modalHistorial.classList.contains('oculto')) {
+    if (e.target === modalHistorial) {
+      cerrarModalHistorialNota();
+    }
+  }
+});
