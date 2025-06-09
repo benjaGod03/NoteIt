@@ -34,18 +34,47 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     })
     .catch(err => console.error('Error al obtener grupos:', err));
+
+    //Modo oscuro (no funciona en el host solo de forma local no entiendo)
+    window.toggleDarkMode = function () {
+  document.body.classList.toggle('dark-mode');
+  const modoActual = document.body.classList.contains('dark-mode') ? 'Modo claro' : 'Modo oscuro';
+  document.getElementById('modoToggleBtn').textContent = modoActual;
+
+  // Actualizar colores de notas individuales
+  document.querySelectorAll('#contenedor-notas .note-box').forEach(nota => {
+    // Si tiene data-editor, usalo; si no, no cambies el color
+    const editor = nota.getAttribute('data-editor');
+    if (editor) {
+      nota.style.background = colorPorEditor(editor);
+    }
+  });
+  // Actualizar colores de notas grupales
+  document.querySelectorAll('#contenedor-notas-grupo .note-box').forEach(nota => {
+    const editor = nota.getAttribute('data-editor');
+    if (editor) {
+      nota.style.background = colorPorEditor(editor);
+    }
+  });
+};
 });
-
-
+ 
 function colorPorEditor(editor) {
-  // Genera un color pastel a partir del nombre del editor
+  // Genera un color pastel claro u oscuro según el modo
   let hash = 0;
   for (let i = 0; i < editor.length; i++) {
     hash = editor.charCodeAt(i) + ((hash << 5) - hash);
   }
-  // Generar color pastel
   const h = Math.abs(hash) % 360;
-  return `hsl(${h}, 70%, 85%)`;
+  // Detectar modo oscuro
+  const dark = document.body.classList.contains('dark-mode');
+  if (dark) {
+    // Pastel oscuro (más saturado, menos luminoso)
+    return `hsl(${h}, 40%, 22%)`;
+  } else {
+    // Pastel claro (como antes)
+    return `hsl(${h}, 70%, 85%)`;
+  }
 }
 
 
@@ -60,7 +89,7 @@ function mostrarNotasDesdeBackend(notas, id_grupo = null) {
   if (!contenedor) return;
   // Elimina notas existentes (excepto el add-box)
   contenedor.querySelectorAll('.note-box').forEach(nota => nota.remove());
-  notas.forEach(nota => {
+  notas.slice().reverse().forEach(nota => {
     const nuevaNota = document.createElement('div');
     nuevaNota.classList.add('note-box');
     nuevaNota.setAttribute('data-uuid', nota.uuid);
@@ -70,8 +99,9 @@ function mostrarNotasDesdeBackend(notas, id_grupo = null) {
 
      // Asignar color si hay editor
     if (editor) {
-      nuevaNota.style.background = colorPorEditor(editor);
-    }
+    nuevaNota.setAttribute('data-editor', editor);
+    nuevaNota.style.background = colorPorEditor(editor);
+     }
     
     
      nuevaNota.innerHTML = `
@@ -257,69 +287,96 @@ function ampliarNota(notaOriginal) {
   contenido.innerText = contenidoOriginal;
   const notaUuid = notaOriginal.getAttribute('data-uuid');
 
-  // Botón historial
-  const historialBtn = document.createElement('button');
-  historialBtn.className = 'historial-btn';
-  historialBtn.title = 'Ver historial';
-  // SVG de reloj con flecha hacia la izquierda
-  historialBtn.innerHTML = `<svg width="22" height="22" fill="none" stroke="#444" stroke-width="2" viewBox="0 0 24 24">
-  <circle cx="12" cy="12" r="10"/>
-  <path d="M12 6v6l-3 3"/>
-  <path d="M8 3a9 9 0 1 0 4 0"/>
-</svg>`;
-  historialBtn.onclick = () => {
-    mostrarHistorialNota(notaUuid);
+    // Botón mover a grupos
+  const gruposBtn = document.createElement('button');
+  gruposBtn.className = 'nota-btn';
+  gruposBtn.title = 'Mover a grupo';
+  gruposBtn.innerHTML = `
+<svg width="22" height="22" fill="none" stroke="#444" stroke-width="1.7" viewBox="0 0 24 24">
+  <circle cx="7" cy="10" r="3"/>
+  <circle cx="17" cy="10" r="3"/>
+  <path d="M2 20c0-2.5 3-4.5 5-4.5s5 2 5 4.5"/>
+  <path d="M12 20c0-2.5 3-4.5 5-4.5s5 2 5 4.5"/>
+</svg>
+`;
+  gruposBtn.onclick = () => {
+    document.getElementById('modalGruposNota').classList.remove('oculto');
   };
+
+  // Botón historial
+  let historialBtn = null;
+  if (grupoActivoId && !isNaN(grupoActivoId)) {
+    historialBtn = document.createElement('button');
+    historialBtn.className = 'nota-btn';
+    historialBtn.title = 'Ver historial';
+    historialBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg"  fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 7v5l3 2" />
+  </svg>`;
+    historialBtn.onclick = () => {
+      mostrarHistorialNota(notaUuid);
+    };
+  }
 
 
   // Botón cerrar 
   const cerrarBtn = document.createElement('button');
-  cerrarBtn.className = 'cerrar-btn';
+  cerrarBtn.className = 'nota-btn';
   cerrarBtn.innerHTML = '✖';
   cerrarBtn.onclick = () => {
-     const nuevoTitulo = titulo.innerText;
-    const nuevoContenido = contenido.innerText;
-    // Si el título o contenido han cambiado, actualiza la nota
-    if (nuevoTitulo !== tituloOriginal || nuevoContenido !== contenidoOriginal) {
-      notaOriginal.querySelector('.note-title').innerText = nuevoTitulo;
-      notaOriginal.querySelector('.note-content').innerText = nuevoContenido;
-      overlay.remove();
-      let body = `accion=guardar_nota&uuid=${encodeURIComponent(notaUuid)}&titulo=${encodeURIComponent(nuevoTitulo)}&contenido=${encodeURIComponent(nuevoContenido)}`;
-      // Detectar si es nota grupal
-      if (grupoActivoId && !isNaN(grupoActivoId)) {
-        body += `&id_grupo=${encodeURIComponent(grupoActivoId)}`;
-      }
-      fetch('main.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body
-      })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            if (data.uuid) {
-              notaOriginal.setAttribute('data-uuid', data.uuid);
-            }
-            const fechaSpan = notaOriginal.querySelector('.note-date');
-            if (fechaSpan) {
-              const ahora = new Date();
-              fechaSpan.textContent = ahora.toLocaleString();
-            }
-          } else {
-            alert('Error: ' + data.message);
-          }
+  const nuevoTitulo = titulo.innerText;
+  const nuevoContenido = contenido.innerText;
+  if (nuevoTitulo !== tituloOriginal || nuevoContenido !== contenidoOriginal) {
+    // Mostrar mini modal de confirmación
+    mostrarModalConfirmarGuardar({
+      onGuardar: () => {
+        notaOriginal.querySelector('.note-title').innerText = nuevoTitulo;
+        notaOriginal.querySelector('.note-content').innerText = nuevoContenido;
+        overlay.remove();
+        let body = `accion=guardar_nota&uuid=${encodeURIComponent(notaUuid)}&titulo=${encodeURIComponent(nuevoTitulo)}&contenido=${encodeURIComponent(nuevoContenido)}`;
+        if (grupoActivoId && !isNaN(grupoActivoId)) {
+          body += `&id_grupo=${encodeURIComponent(grupoActivoId)}`;
+        }
+        fetch('main.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body
         })
-        .catch(() => alert('Error al conectar con el servidor.'));
-    }
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              if (data.uuid) {
+                notaOriginal.setAttribute('data-uuid', data.uuid);
+              }
+              const fechaSpan = notaOriginal.querySelector('.note-date');
+              if (fechaSpan) {
+                const ahora = new Date();
+                fechaSpan.textContent = ahora.toLocaleString();
+              }
+            } else {
+              alert('Error: ' + data.message);
+            }
+          })
+          .catch(() => alert('Error al conectar con el servidor.'));
+      },
+      onDescartar: () => {
+        overlay.remove();
+      },
+      onCancelar: () => {
+        // No hacer nada, solo cerrar el mini modal
+      }
+    });
+  } else {
     overlay.remove();
-  };
+  }
+};
 
 
   // Botón descargar 
   const descargarBtn = document.createElement('button');
-  descargarBtn.className = 'descargar-btn';
+  descargarBtn.className = 'nota-btn';
   descargarBtn.title = 'Descargar nota';
-  descargarBtn.innerHTML = `<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 16l4-5h-3V4h-2v7H8l4 5zm-8 2v2h16v-2H4z"/></svg>`;
+  descargarBtn.innerHTML = `<svg  fill="currentColor" viewBox="0 0 24 24"><path d="M12 16l4-5h-3V4h-2v7H8l4 5zm-8 2v2h16v-2H4z"/></svg>`;
   descargarBtn.onclick = () => {
     const texto = `Título: ${titulo.innerText}\n\n${contenido.innerText}`;
     const blob = new Blob([texto], { type: 'text/plain' });
@@ -340,7 +397,8 @@ function ampliarNota(notaOriginal) {
   acciones.style.display = 'flex';
   acciones.style.justifyContent = 'flex-end';
   acciones.style.gap = '8px';
-  acciones.appendChild(historialBtn);
+  acciones.appendChild(gruposBtn);
+   if (historialBtn) acciones.appendChild(historialBtn);
   acciones.appendChild(descargarBtn);
   acciones.appendChild(cerrarBtn);
 
@@ -898,6 +956,10 @@ function cerrarModalMiembrosGrupo() {
   document.getElementById('modalMiembrosGrupo').classList.add('oculto');
 }
 
+function cerrarModalGruposNota() {
+  document.getElementById('modalGruposNota').classList.add('oculto');
+}
+
 // Cerrar modales al hacer clic fuera de ellos
 window.addEventListener('click', function(e) {
   // Modal Miembros Grupo
@@ -923,4 +985,41 @@ window.addEventListener('click', function(e) {
       cerrarModalHistorialNota();
     }
   }
+
+  // Modal mover a grupo
+  const modalmovergrupo = document.getElementById('modalGruposNota');
+  if (
+    modalmovergrupo &&
+    !modalmovergrupo.classList.contains('oculto') &&
+    e.target === modalmovergrupo
+  ) {
+    cerrarModalGruposNota();
+  }
 });
+
+function mostrarModalConfirmarGuardar({ onGuardar, onDescartar, onCancelar }) {
+  const modal = document.getElementById('modalConfirmarGuardar');
+  modal.classList.remove('oculto');
+  // Limpiar handlers previos
+  const btnGuardar = document.getElementById('btnGuardarCambios');
+  const btnDescartar = document.getElementById('btnDescartarCambios');
+  const btnCancelar = document.getElementById('btnCancelarCerrar');
+
+  // Remover listeners previos
+  btnGuardar.onclick = null;
+  btnDescartar.onclick = null;
+  btnCancelar.onclick = null;
+
+  btnGuardar.onclick = () => {
+    modal.classList.add('oculto');
+    if (onGuardar) onGuardar();
+  };
+  btnDescartar.onclick = () => {
+    modal.classList.add('oculto');
+    if (onDescartar) onDescartar();
+  };
+  btnCancelar.onclick = () => {
+    modal.classList.add('oculto');
+    if (onCancelar) onCancelar();
+  };
+}
