@@ -1,5 +1,13 @@
 //libreria sortable es para mover las notas si encontras una forma mejor cambialo
 document.addEventListener("DOMContentLoaded", () => {
+      if (localStorage.getItem('modoOscuro') === '1') {
+    document.body.classList.add('dark-mode');
+    document.getElementById('modoToggleBtn').textContent = 'Modo claro';
+  } else {
+    document.body.classList.remove('dark-mode');
+    document.getElementById('modoToggleBtn').textContent = 'Modo oscuro';
+  }
+
   // lo inicia
   new Sortable(document.getElementById('contenedor-notas'), {
     animation: 150,
@@ -38,6 +46,8 @@ document.addEventListener("DOMContentLoaded", () => {
     //Modo oscuro (no funciona en el host solo de forma local no entiendo)
     window.toggleDarkMode = function () {
   document.body.classList.toggle('dark-mode');
+  const darkMode = document.body.classList.contains('dark-mode');
+  localStorage.setItem('modoOscuro', darkMode ? '1' : '0');
   const modoActual = document.body.classList.contains('dark-mode') ? 'Modo claro' : 'Modo oscuro';
   document.getElementById('modoToggleBtn').textContent = modoActual;
 
