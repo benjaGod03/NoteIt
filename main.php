@@ -10,7 +10,11 @@ date_default_timezone_set('America/Argentina/Buenos_Aires');
 
 // Eliminar nota si se recibe por POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'eliminar') {
+    if($_POTS['id_grupo'] != '0'){
+        $autor = $_POST['id_grupo'] ?? '';}
+    else{
     $autor = $_SESSION['correo'] ?? '';
+    }
     $uuid = $_POST['uuid'] ?? '';
     $response = ['success' => false, 'message' => ''];
     if (empty($autor) || empty($uuid)) {
@@ -30,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['
                 $response['success'] = true;
                 $response['message'] = 'Nota eliminada correctamente.';
             } else {
-                $response['message'] = 'No se encontró la nota para eliminar.';
+                $response['success'] = true;
             }
         } catch (PDOException $e) {
             $response['message'] = 'Error al eliminar la nota: ' . $e->getMessage();
@@ -565,6 +569,52 @@ if($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['acti
         } catch (PDOException $e) {
             $response['message'] = 'Error al obtener la foto: ' . $e->getMessage();
         }
+    }
+    header('Content-Type: application/json');
+    echo json_encode($response);
+    exit();
+}
+
+if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST) && $_POST['accion'] === 'restaurar_version'){
+    $uuid = $_POST['uuid'] ?? '';
+    $fecha = $_POST['fecha'] ?? '';
+    $response = ['success' => false, 'message' => ''];
+    try {
+        $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdo->exec("SET time_zone = '-03:00'");
+        // Verificar si existe una versión en el historial
+        $queryHistorial = "SELECT titulo, contenido, editor FROM notas_historial WHERE uuid = :uuid AND fecha = :fecha";
+        $stmtHistorial = $pdo->prepare($queryHistorial);
+        $stmtHistorial->bindParam(':uuid', $uuid);
+        $stmtHistorial->bindParam(':fecha', $fecha);
+        $stmtHistorial->execute();
+        $version = $stmtHistorial->fetch(PDO::FETCH_ASSOC);
+        if ($version) {
+            // Actualizar la nota con la versión restaurada y la fecha original
+            $queryUpdate = "UPDATE notas SET titulo = :titulo, contenido = :contenido, fecha = :fecha, editor =:editor WHERE uuid = :uuid";
+            $stmtUpdate = $pdo->prepare($queryUpdate);
+            $stmtUpdate->bindParam(':titulo', $version['titulo']);
+            $stmtUpdate->bindParam(':contenido', $version['contenido']);
+            $stmtUpdate->bindParam(':fecha', $fecha);
+            $stmtUpdate->bindParam(':editor', $version['editor']);
+            $stmtUpdate->bindParam(':uuid', $uuid);
+            if ($stmtUpdate->execute()) {
+                $response['success'] = true;
+                $response['message'] = 'Nota restaurada correctamente.';
+            } else {
+                $response['message'] = 'Error al restaurar la nota.';
+            }
+            $queryeliminar = "DELETE FROM notas_historial WHERE uuid = :uuid AND fecha = :fecha";
+            $stmteliminar = $pdo->prepare($queryeliminar);
+            $stmteliminar->bindParam(':uuid', $uuid);
+            $stmteliminar->bindParam(':fecha', $fecha);
+            $stmteliminar->execute();
+        } else {
+            $response['message'] = 'No se encontró la versión especificada en el historial.';
+        }
+    } catch (PDOException $e) {
+        $response['message'] = 'Error al restaurar la versión: ' . $e->getMessage();
     }
     header('Content-Type: application/json');
     echo json_encode($response);

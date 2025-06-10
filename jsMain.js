@@ -415,6 +415,7 @@ function ampliarNota(notaOriginal) {
 };
 
 
+
   // Botón descargar 
   const descargarBtn = document.createElement('button');
   descargarBtn.className = 'nota-btn';
@@ -463,9 +464,11 @@ function mostrarHistorialNota(uuid) {
         data.historial.forEach(version => {
           const variante = document.createElement('div');
           variante.className = 'note-box';
-          let fechaTexto = version.fecha ? new Date(version.fecha).toLocaleString() : '';
-          let editor = version.editor || '';
-          variante.style.background = colorPorEditor(editor);
+          variante.uuid = uuid;
+          let fechaTexto =  version.fecha ? new Date(version.fecha).toLocaleString() : '';
+          let editor = version.editor ? ` - ${version.editor}` : '';
+          variante.fecha = version.fecha;
+          variante.style.background = colorPorEditor(version.editor);
           variante.innerHTML = `
             <h3 class="note-title">${version.titulo}</h3>
             <p class="note-content">${version.contenido}</p>
@@ -474,6 +477,7 @@ function mostrarHistorialNota(uuid) {
             </div>
           `;
           contenedor.appendChild(variante);
+          variante.addEventListener('click', function () {ampliarNotaVariante(variante);});
         });
         document.getElementById('modalHistorialNota').classList.remove('oculto');
       } else {
@@ -481,7 +485,83 @@ function mostrarHistorialNota(uuid) {
       }
     })
     .catch(() => alert('Error al obtener el historial de la nota.'));
+    console.error('Error en fetch historial:', err);
 }
+
+function ampliarNotaVariante(variante){
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    const notaClonada = document.createElement('div');
+    notaClonada.className = 'ampliada';
+
+    const tituloOriginal = variante.querySelector('.note-title').innerText;
+    const contenidoOriginal = variante.querySelector('.note-content').innerText;
+
+    const titulo = document.createElement('h3');
+    titulo.className = 'note-title';
+    titulo.contentEditable = false;
+    titulo.innerText = tituloOriginal;
+
+    const contenido = document.createElement('p');
+    contenido.className = 'note-content';
+    contenido.contentEditable = false;
+    contenido.innerText = contenidoOriginal;
+
+    // Botón cerrar
+    const cerrarBtn = document.createElement('button');
+    cerrarBtn.className = 'nota-btn';
+    cerrarBtn.innerHTML = '✖';
+    cerrarBtn.onclick = () => {
+        overlay.remove();
+    };
+
+    // Botón volver a esta versión
+    const volverBtn = document.createElement('button');
+    volverBtn.className = 'nota-btn';
+    volverBtn.textContent = 'Volver a esta versión';
+    volverBtn.onclick = () => {
+    // Aquí deberías hacer el fetch para actualizar la nota original con los datos de esta versión
+    // Por ejemplo, suponiendo que tienes el uuid de la nota original:
+    fetch('main.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'accion=restaurar_version&uuid=' + encodeURIComponent(variante.uuid) +
+              '&fecha=' + encodeURIComponent(variante.fecha) // Fecha de la versión
+              
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            overlay.remove();
+            document.getElementById('modalHistorialNota').classList.add('oculto');
+            mostrarVistaGrupo(nombreGrupoActivo,grupoActivoId); // O refresca el grupo si es grupal
+        } else {
+            alert('No se pudo restaurar la versión: ' + (data.message || 'Error'));
+        }
+    })
+    .catch(() => alert('Error al conectar con el servidor.'));
+};
+
+    // Opcional: fecha y editor
+    const footer = variante.querySelector('.note-footer').cloneNode(true);
+
+    // Armado
+    const acciones = document.createElement('div');
+    acciones.style.display = 'flex';
+    acciones.style.justifyContent = 'flex-end';
+    acciones.style.gap = '8px';
+    acciones.appendChild(cerrarBtn);
+    acciones.appendChild(volverBtn);
+
+    notaClonada.appendChild(acciones);
+    notaClonada.appendChild(titulo);
+    notaClonada.appendChild(contenido);
+    notaClonada.appendChild(footer);
+
+    overlay.appendChild(notaClonada);
+    document.body.appendChild(overlay);
+}
+
 
 function cerrarModalHistorialNota() {
   document.getElementById('modalHistorialNota').classList.add('oculto');
@@ -497,7 +577,7 @@ function generarUUID() {
 
 function agregarNota() {
   const contenedor = document.getElementById('contenedor-notas');
-  cons = document.createElement('div'); //crea la nota nueva
+  const nuevaNota = document.createElement('div'); //crea la nota nueva
   nuevaNota.classList.add('note-box');
   // Generar y asignar UUID
   const uuid = generarUUID();
