@@ -349,6 +349,7 @@ function ampliarNota(notaOriginal) {
     <path d="M12 7v5l3 2" />
   </svg>`;
     historialBtn.onclick = () => {
+      overlay.remove()
       mostrarHistorialNota(notaUuid);
     };
     
@@ -522,6 +523,7 @@ function ampliarNotaVariante(variante){
   <polyline points="1 4 1 10 7 10"/>
   <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>`;
     volverBtn.onclick = () => {
+      overlay.remove();
     // Aquí deberías hacer el fetch para actualizar la nota original con los datos de esta versión
     // Por ejemplo, suponiendo que tienes el uuid de la nota original:
     fetch('main.php', {
