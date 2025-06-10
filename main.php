@@ -487,4 +487,87 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
     echo json_encode($response);
     exit();
 }
+
+if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'guardar_foto'){
+   $usuario = $_SESSION['correo'] ?? '';
+   $response = ['success' => false];
+   if(empty($usuario) || !isset($_FILES['foto'])){
+       $response['message'] = 'Foto y usuario son obligatorios.';
+   } else {
+        $uploadsDir = __DIR__ . '/uploads/';
+        if (!is_dir($uploadsDir)) {
+            mkdir($uploadsDir, 0777, true);
+        }
+        $fileTmp = $_FILES['foto']['tmp_name'];
+        $fileName = uniqid('foto_') . '_' . basename($_FILES['foto']['name']);
+        $destPath = $uploadsDir . $fileName;
+        $rutaRelativa = 'uploads/' . $fileName;
+        if (move_uploaded_file($fileTmp, $destPath)) {
+            try {
+                $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $pdo->exec("SET time_zone = '-03:00'");
+                $queryeliminar = "SELECT foto from datos WHERE correo = :correo";
+                $stmteliminar = $pdo->prepare($queryeliminar);
+                $stmteliminar->bindParam(':correo', $usuario);
+                $stmteliminar->execute();
+                $fotoActual = $stmteliminar->fetchColumn();
+                if (!empty($fotoActual)) {
+                    $rutaCompleta = __DIR__ . '/' . $fotoActual;
+                    if (file_exists($rutaCompleta)) {
+                        unlink($rutaCompleta);
+                    }
+                }
+                $query = "UPDATE datos SET foto = :foto WHERE correo = :correo";
+                $stmt = $pdo->prepare($query);
+                $stmt->bindParam(':foto', $rutaRelativa);
+                $stmt->bindParam(':correo', $usuario);
+                if ($stmt->execute()) {
+                    $_SESSION['foto'] = $rutaRelativa;
+                    $response['success'] = true;
+                    $response['fotoPerfil'] = $rutaRelativa;
+                } else {
+                    $response['message'] = 'Error al actualizar la ruta en la base de datos.';
+                }
+            } catch (PDOException $e) {
+                $response['message'] = 'Error al guardar la foto: ' . $e->getMessage();
+            }
+        } else {
+            $response['message'] = 'Error al mover el archivo al servidor.';
+        }
+    }
+    header('Content-Type: application/json');
+    echo json_encode($response);
+    exit();
+}
+
+if($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'obtener_foto'){
+    $usuario = $_SESSION['correo'] ?? '';
+    $response = ['success' => false, 'foto' => '', 'message' => ''];
+    if (empty($usuario)) {
+        $response['message'] = 'Usuario no autenticado.';
+    } else {
+        try {
+            $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo->exec("SET time_zone = '-03:00'");
+            $query = "SELECT foto FROM datos WHERE correo = :correo";
+            $stmt = $pdo->prepare($query);
+            $stmt->bindParam(':correo', $usuario);
+            $stmt->execute();
+            $foto = $stmt->fetchColumn();
+            if ($foto) {
+                $response['success'] = true;
+                $response['foto'] = $foto;
+            } else {
+                $response['message'] = 'No se encontró la foto del usuario.';
+            }
+        } catch (PDOException $e) {
+            $response['message'] = 'Error al obtener la foto: ' . $e->getMessage();
+        }
+    }
+    header('Content-Type: application/json');
+    echo json_encode($response);
+    exit();
+}
 include 'main.html';

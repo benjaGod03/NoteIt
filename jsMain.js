@@ -30,7 +30,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     })
     .catch(err => console.error('Error al obtener notas:', err));
-
   // Cargar grupos del usuario al iniciar
   fetch('main.php?action=listar_grupos')
     .then(res => res.json())
@@ -42,6 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     })
     .catch(err => console.error('Error al obtener grupos:', err));
+
 
     //Modo oscuro (no funciona en el host solo de forma local no entiendo)
     window.toggleDarkMode = function () {
@@ -68,6 +68,30 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 };
 });
+
+function cargarNotasUsuario() {fetch('main.php?action=listar&id_grupo=0')
+    .then(res => res.json())
+    .then(data => {
+      if (data.success && Array.isArray(data.notas)) {
+        mostrarNotasDesdeBackend(data.notas);
+      } else {
+        console.error('No se pudieron cargar las notas:', data.message);
+      }
+    })
+    .catch(err => console.error('Error al obtener notas:', err));
+}
+
+function cargarGruposUsuario() {  fetch('main.php?action=listar_grupos')
+    .then(res => res.json())
+    .then(data => {
+      if (data.success && Array.isArray(data.grupos)) {
+        mostrarGruposDesdeBackend(data.grupos);
+      } else {
+        console.error('No se pudieron cargar los grupos:', data.message);
+      }
+    })
+    .catch(err => console.error('Error al obtener grupos:', err));
+}
  
 function colorPorEditor(editor) {
   // Genera un color pastel claro u oscuro según el modo
@@ -163,6 +187,7 @@ function mostrarNotasDesdeBackend(notas, id_grupo = null) {
 
 // Variable global para el id del grupo actualmente abierto
 let grupoActivoId = null;
+let nombreGrupoActivo = '';
 
 function mostrarGruposDesdeBackend(grupos) {
   const contenedor = document.getElementById('contenedor-grupos');
@@ -211,6 +236,7 @@ function mostrarVistaGrupo(nombreGrupo, idGrupo) {
   document.getElementById('nombre-del-grupo').innerText = nombreGrupo;
   // Asegurarse de que el id sea un número entero
   grupoActivoId = parseInt(idGrupo, 10);
+  nombreGrupoActivo = nombreGrupo;
   // Limpiar las notas previas del contenedor de grupo
   const contenedorGrupo = document.getElementById('contenedor-notas-grupo');
   if (contenedorGrupo) {
@@ -366,8 +392,15 @@ function ampliarNota(notaOriginal) {
             } else {
               alert('Error: ' + data.message);
             }
-          })
-          .catch(() => alert('Error al conectar con el servidor.'));
+          if(grupoActivoId && !isNaN(grupoActivoId)) {
+            // Actualizar notas del grupo
+            mostrarVistaGrupo(nombreGrupoActivo,grupoActivoId);
+          }
+          else {
+            // Actualizar notas individuales
+            cargarNotasUsuario();
+          }
+        }).catch(() => alert('Error al conectar con el servidor.'));
       },
       onDescartar: () => {
         overlay.remove();
@@ -464,7 +497,7 @@ function generarUUID() {
 
 function agregarNota() {
   const contenedor = document.getElementById('contenedor-notas');
-  const nuevaNota = document.createElement('div'); //crea la nota nueva
+  cons = document.createElement('div'); //crea la nota nueva
   nuevaNota.classList.add('note-box');
   // Generar y asignar UUID
   const uuid = generarUUID();
@@ -535,29 +568,67 @@ function agregarNota() {
 function inicializarPerfil() {
   // abrir selector de archivos cuando apretas el perfil
   const foto = document.getElementById('fotoPerfil');
+  const fotoPerfilMenu = document.getElementById('fotoPerfilMenu');
   const input = document.getElementById('inputFoto');
 
   foto.addEventListener('click', () => input.click());
 
   input.addEventListener('change', () => {
-    const file = input.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = e => {
-        foto.src = e.target.result;
-        // guarda en localstorage para mantenerlo al recargar:
-        localStorage.setItem('fotoPerfil', e.target.result);
-      };
-      reader.readAsDataURL(file);
-    }
+     const file = input.files[0];
+  if (file) {
+    const formData = new FormData();
+    formData.append('accion', 'guardar_foto');
+    formData.append('foto', file);
+
+    fetch('main.php', {
+      method: 'POST',
+      body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success && data.fotoPerfil) {
+        foto.src = data.fotoPerfil; // Actualiza la imagen del perfil
+        fotoPerfilMenu.src = data.fotoPerfil; // Actualiza la imagen del menú
+        localStorage.setItem('fotoPerfil', data.fotoPerfil);
+        localStorage.setItem('fotoPerfilMenu', data.fotoPerfil); 
+      } else {
+        alert('Error al guardar la foto: ' + data.message);
+      }
+    })
+    .catch(() => {
+      alert('Error al conectar con el servidor.');
+    });
+  }
   });
 
-  // por si ya hay una imagen guardada
-  const guardada = localStorage.getItem('fotoPerfil');
-  if (guardada) {
-    foto.src = guardada;
-  }
-
+  // cargar imagen de perfil desde el backend, en caso de error, cargar imagen guardada o imagen por defecto.
+  fetch('main.php?action=obtener_foto')
+  .then(res => res.json())
+  .then(data => {
+    if (data.success && data.foto && data.foto !== '') {
+      foto.src = data.foto;
+      fotoPerfilMenu.src = data.foto
+      localStorage.setItem('fotoPerfil', data.foto);
+    } else {
+      const guardada = localStorage.getItem('fotoPerfil');
+      const guardadaMenu = localStorage.getItem('fotoPerfilMenu');
+      if (guardada) {
+        foto.src = guardada;
+        fotoperfilMenu.src = guardadaMenu;
+      } else {
+        foto.src = 'images/descarga.svg'; // Imagen por defecto si no hay foto guardada
+      }
+    }
+  })
+  .catch(() => {
+    const guardada = localStorage.getItem('fotoPerfil');
+    if (guardada) {
+      foto.src = guardada;
+    } else {
+      foto.src = 'images/descarga.svg'; // Imagen por defecto si no hay foto guardada
+    }
+  });
+  
   // boton volver atras
   document.getElementById('btnVolver').addEventListener('click', () => {
     window.location.href = 'main.php';
@@ -586,6 +657,7 @@ function mostrarSeccion(seccion) {
     btnInd.classList.add('activo');
     btnGrp.classList.remove('activo');
   } else {
+    cargarGruposUsuario(); // Cargar grupos al cambiar a la sección grupal
     individuales.style.display = 'none';
     grupales.style.display = 'block';
     btnGrp.classList.add('activo');
@@ -637,6 +709,7 @@ window.addEventListener('click', (e) => {
 
 function volverAGrupos() {
   grupoActivoId = null; // Resetear el grupo activo
+  nombreGrupoActivo = ''; // Resetear el nombre del grupo activo
   document.getElementById('vista-grupo').style.display = 'none';
   document.getElementById('notas-grupales').style.display = 'block';
   document.getElementById('barra-secciones').style.display = 'flex'; // MUESTRA la barra
@@ -770,7 +843,7 @@ function agregarNotificacion(mensaje, id, idGrupo) {
     fetch('main.php?action=agregar_miembro&id_grupo='+ encodeURIComponent(idGrupo))
     .then(res => res.json())
     .then(data => {
-      if (data.success) { "agregado a grupo"}
+      if (data.success) { "Agregado a grupo exitosamente" }
       else { "error al agregar a grupo"}
     })
     .catch(err => console.error("Error al conectar con el servidor:", err));
