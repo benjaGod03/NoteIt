@@ -327,8 +327,7 @@ function ampliarNota(notaOriginal) {
   const gruposBtn = document.createElement('button');
   gruposBtn.className = 'nota-btn';
   gruposBtn.title = 'Mover a grupo';
-  gruposBtn.innerHTML = `
-<svg width="22" height="22" fill="none" stroke="#444" stroke-width="1.7" viewBox="0 0 24 24">
+  gruposBtn.innerHTML = `<svg fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24">
   <circle cx="7" cy="10" r="3"/>
   <circle cx="17" cy="10" r="3"/>
   <path d="M2 20c0-2.5 3-4.5 5-4.5s5 2 5 4.5"/>
@@ -352,6 +351,7 @@ function ampliarNota(notaOriginal) {
     historialBtn.onclick = () => {
       mostrarHistorialNota(notaUuid);
     };
+    
   }
 
 
@@ -518,7 +518,9 @@ function ampliarNotaVariante(variante){
     // Botón volver a esta versión
     const volverBtn = document.createElement('button');
     volverBtn.className = 'nota-btn';
-    volverBtn.textContent = 'Volver a esta versión';
+    volverBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"  viewBox="0 0 24 24">
+  <polyline points="1 4 1 10 7 10"/>
+  <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>`;
     volverBtn.onclick = () => {
     // Aquí deberías hacer el fetch para actualizar la nota original con los datos de esta versión
     // Por ejemplo, suponiendo que tienes el uuid de la nota original:
@@ -583,15 +585,24 @@ function agregarNota() {
   const uuid = generarUUID();
   nuevaNota.setAttribute('data-uuid', uuid);
 
+ //separo la fecha de la hora 
   const fechaHora = new Date();
-  const fechaHoraTexto = fechaHora.toLocaleString();
+  const fecha = fechaHora.toLocaleDateString();    // "10/6/2025"
+  const hora = fechaHora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); // "14:35"
+
+  const fechaHoraTexto = `${fecha}<br>${hora}`;
 
   //aca le dice al atributo nuevaNota que va a tener dentro lo siguiente
   nuevaNota.innerHTML = ` 
         <h3 class="note-title">Título de nota</h3>
         <p class="note-content">Agregar texto :)</p>
         <div class="note-footer">
+          <div class="perfil">
+          <img src="images/descarga.svg" alt="Foto de perfil" class="foto-miembro" id="fotoPerfil">
+          <span class="nombre-usuario">usuario</span>
+          </div>
           <span class="note-date">${fechaHoraTexto}</span>
+          </div>
           <button class="delete-btn">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#76448a" stroke-width="2">
         <path d="M3 6h18M5 6l1 16h12l1-16H5z" />

@@ -12,6 +12,13 @@ body {
   overflow-x: hidden;
 }
 
+body.dark-mode {
+  background: linear-gradient(150deg, #2a004f, #320b86, #0d47a1);
+  background-size: 400% 400%;
+  animation: gradientShift 20s ease-in-out infinite alternate-reverse;
+  color: #e0e0e0;
+}
+
 @keyframes gradientShift {
   0% {
     background-position: 0% 50%;
@@ -60,8 +67,9 @@ body {
 }
 
 .logo-icon {
-  width: 32px;
-  height: 32px;
+  width: 50px;
+  height: 50px;
+  font-weight: bold;
   object-fit: contain;
 }
 
@@ -89,7 +97,7 @@ body {
 .wrapper {
   backdrop-filter: blur(5px); 
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 10px;
   width: 92%;
   margin: auto;
@@ -100,9 +108,14 @@ body {
   border-radius: 20px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
-  grid-auto-rows: 180px; /* Altura fija para las filas */
+  grid-auto-rows: 200px; /* Altura fija para las filas */
   scrollbar-width: thin;
   scrollbar-color: #66b8e6 #dff3f7;
+}
+body.dark-mode .wrapper {
+  background-color: rgba(30, 30, 30, 1);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+  scrollbar-color: #bbb #444;
 }
 
 /* boton para agregar nota */
@@ -123,6 +136,10 @@ body {
   font-size: 15px;
   transition: background-color 0.3s ease;
   
+}
+body.dark-mode .add-box { 
+  background-color: #323334; 
+  color: white;
 }
 
 .add-box:hover {
@@ -145,18 +162,22 @@ body {
 /* Estilo de las notas */
 .note-box {
   position: relative;
-  max-width: 150px;
+  max-width: 200px;
   aspect-ratio: 1 / 1;
   /* hace que sean cuadradas */
   margin: 5%;
   background-color: #fdf3b0;
   border-radius: 10px;
-  padding: 15px;
+  
   box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.15);
   transition: transform 0.2s ease;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+body.dark-mode .note-box {
+  background-color: #2a475b; 
+  box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.4);
 }
 
 .note-box:hover {
@@ -164,6 +185,8 @@ body {
 }
 
 .note-title {
+  padding: 10px;
+  top: 1px;
   margin: 0;
   font-size: 1rem;
   color: #333;
@@ -175,13 +198,17 @@ body {
   line-clamp: 1;
   overflow: hidden;
 }
+body.dark-mode .note-title{color: white;}
 
 .note-content {
+  padding: 10px;
   font-size: 0.9rem;
   margin-top: 10px;
   color: #444;
   outline: none;
 }
+body.dark-mode .note-content{color: #e5f3f6;}
+
 /*parche para q no muestre de mas*/
 .note-box .note-content {
   overflow: hidden;
@@ -236,12 +263,46 @@ body {
 
 
 .note-footer {
+  border-top: 1px solid #fef5ec;
+  background-color: rgba(255, 255, 255, 0.5);
   margin-top: auto;
-  font-size: 0.9rem;
+  font-size: 0.6rem;
   color: #666;
-  text-align: right;
-
+  display: flex;
+  align-items: center;
+  justify-content: space-between; 
+  padding-top: 5px;
 }
+nota-date{
+  text-align: right;
+  margin-left: auto;
+  margin-right: 10px;
+}
+.perfil{
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.foto-miembro {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  object-fit: cover;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin: 5px;
+}
+.nombre-usuario {
+  font-weight: 500;
+  font-size: 0.8rem;
+  color: #666;
+}
+body.dark-mode .note-footer {
+  background-color: rgba(50, 50, 50, 0.5); 
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: #aea9ba
+}
+body.dark-mode .nombre-usuario{color: #aea9ba;}
 
 /* fondo oscuro atras de la nota ampliada */
 .overlay {
@@ -254,7 +315,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 999;
+  z-index: 1000;
 }
 
 /* estilo de la nota ampliada */
@@ -273,8 +334,11 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #2c2c2c;
   transform-origin:center;
-
+  z-index: 1;
 }
+body.dark-mode .ampliada{background-color: #aea9ba;}
+
+
 
 .ampliada h3,
 .ampliada p {
@@ -287,15 +351,27 @@ body {
 }
 
 /* el boton q cierra la nota ampliada */
-.cerrar-btn {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  background: none;
+.nota-btn {
+ background: none;
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
   color: #a00;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+.note-actions {
+   display: flex;
+  justify-content: flex-end;
+  align-items: center; /* asegura alineación vertical */
+  gap: 8px;
+  margin-bottom: 5px;
 }
 
 @keyframes abrirNotaVertical {
@@ -307,12 +383,6 @@ body {
     transform: scaleY(1);
     opacity: 1;
   }
-}
-.note-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-bottom: 5px;
 }
 
 .dragging {
@@ -449,6 +519,7 @@ body {
   transition: background-color 0.3s;
   box-shadow: 0 6px 20px rgba(255, 255, 255, 0.25), 0 4px 15px rgba(108, 92, 231, 0.4);
 }
+body.dark-mode .btn{background-color: #483D8B;}
 .btn:hover {
   background-color: #6c5ce7;
   box-shadow: 0 0 10px rgba(108, 92, 231, 0.6);
@@ -466,7 +537,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin: 20px;
   padding: 0 10px;
 }
 
@@ -504,7 +575,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 9999;
 }
 
 /* Contenido del modal */
@@ -547,30 +618,32 @@ body {
   width: 520px;
   max-height: 80vh;
   overflow-y: hidden;
-  background: #66b8e6; 
+  background-color: rgba(200, 160, 255, 0.2);
   border-radius: 16px;
   padding: 24px;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
   font-family: 'Poppins', sans-serif;
+  z-index: 1000;
 }
 #historialNotasContenedor.wrapper {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  background: fixed; 
+  background-color: rgba(200, 160, 255, 0.1);
   border: none;
   gap: 10px;
   width: 92%;
-  margin-top: 10px;
+  margin-top: 20px;
   padding: 10px;
-  height: 80vh;
+  height: 70vh;
   overflow-y: scroll;
   color: #1a3a4a;
   font-size: 0.95rem;
   border-radius: 10px;
   scrollbar-width: thin;
-  scrollbar-color: #66b8e6 #e0f6fb;
+  scrollbar-color: #6c5ce7 #e0f6fb;
 }
 .modalhistorialnota .modal-header{
+  margin-bottom: 10px;
   padding: 5px;
   font-size: 14px;
 }
@@ -900,6 +973,7 @@ html {
   overflow: hidden;
    box-sizing: border-box;
 }
+body.dark-mode .grupo-creado p{color: #e5f3f6;}
 
 /* Puntito rojo de notificaciones */
 #noti-dot {
