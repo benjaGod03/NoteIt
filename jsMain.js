@@ -339,9 +339,49 @@ function ampliarNota(notaOriginal) {
   <path d="M12 20c0-2.5 3-4.5 5-4.5s5 2 5 4.5"/>
 </svg>
 `;
-  gruposBtn.onclick = () => {
-    document.getElementById('modalMoverAGrupo').classList.remove('oculto');
-  };
+ gruposBtn.onclick = () => {
+  // Limpiar la lista antes de cargar
+  const lista = document.getElementById('listaGruposMover');
+  lista.innerHTML = '';
+
+  // Traer los grupos 
+  fetch('main.php?action=listar_grupos')
+    .then(res => res.json())
+    .then(data => {
+      if (data.success && Array.isArray(data.grupos)) {
+        data.grupos.forEach(grupo => {
+          const li = document.createElement('li');
+          li.className = 'miembros-item';
+          li.style.display = 'flex';
+          li.style.justifyContent = 'space-between';
+          li.style.alignItems = 'center';
+
+          const nombre = document.createElement('span');
+          nombre.textContent = grupo.nombre;
+
+          const btnMover = document.createElement('button');
+          btnMover.textContent = 'Mover';
+          btnMover.className = 'btn';
+          btnMover.onclick = () => {
+            // Por ahora no hace nada
+            // Acá iría la lógica para mover la nota
+          };
+
+          li.appendChild(nombre);
+          li.appendChild(btnMover);
+          lista.appendChild(li);
+        });
+      } else {
+        lista.innerHTML = '<li>No se pudieron cargar los grupos.</li>';
+      }
+    })
+    .catch(() => {
+      lista.innerHTML = '<li>Error al conectar con el servidor.</li>';
+    });
+
+  
+  document.getElementById('modalMoverAGrupo').classList.remove('oculto');
+};
 
   // Botón historial
   let historialBtn = null;
