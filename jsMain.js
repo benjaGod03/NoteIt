@@ -335,7 +335,7 @@ function ampliarNota(notaOriginal) {
 </svg>
 `;
   gruposBtn.onclick = () => {
-    document.getElementById('modalGruposNota').classList.remove('oculto');
+    document.getElementById('modalMoverAGrupo').classList.remove('oculto');
   };
 
   // Botón historial
@@ -490,6 +490,8 @@ function mostrarHistorialNota(uuid) {
 }
 
 function ampliarNotaVariante(variante){
+
+    document.getElementById('modalHistorialNota').classList.add('oculto');
     const overlay = document.createElement('div');
     overlay.className = 'overlay';
     const notaClonada = document.createElement('div');
@@ -514,6 +516,7 @@ function ampliarNotaVariante(variante){
     cerrarBtn.innerHTML = '✖';
     cerrarBtn.onclick = () => {
         overlay.remove();
+         document.getElementById('modalHistorialNota').classList.remove('oculto');
     };
 
     // Botón volver a esta versión
@@ -1133,7 +1136,7 @@ function cerrarModalMiembrosGrupo() {
 }
 
 function cerrarModalGruposNota() {
-  document.getElementById('modalGruposNota').classList.add('oculto');
+  document.getElementById('modalMoverAGrupo').classList.add('oculto');
 }
 
 // Cerrar modales al hacer clic fuera de ellos
@@ -1163,7 +1166,7 @@ window.addEventListener('click', function(e) {
   }
 
   // Modal mover a grupo
-  const modalmovergrupo = document.getElementById('modalGruposNota');
+  const modalmovergrupo = document.getElementById('modalMoverAGrupo');
   if (
     modalmovergrupo &&
     !modalmovergrupo.classList.contains('oculto') &&
