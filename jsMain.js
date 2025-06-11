@@ -269,7 +269,12 @@ function agregarNotaAGrupo() {
         <h3 class="note-title" contenteditable="true">Título de nota</h3>
         <p class="note-content" contenteditable="true">Texto grupal :)</p>
         <div class="note-footer">
+        <div class="perfil">
+          <img src="images/descarga.svg" alt="Foto de perfil" class="foto-miembro" id="fotoPerfil">
+          <span class="nombre-usuario">usuario</span>
+          </div>
           <span class="note-date">${fechaHoraTexto}</span>
+          </div>
           <button class="delete-btn">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#76448a" stroke-width="2">
               <path d="M3 6h18M5 6l1 16h12l1-16H5z" />
@@ -277,7 +282,7 @@ function agregarNotaAGrupo() {
               <path d="M9 6V4a 1 1 0 0 1 1-1h4a 1 1 0 0 1 1 1v2" />
             </svg>
           </button>
-        </div>
+        
     `;
   nuevaNota.querySelector('.delete-btn').addEventListener('click', function (e) {
     e.stopPropagation();
@@ -335,49 +340,8 @@ function ampliarNota(notaOriginal) {
 </svg>
 `;
   gruposBtn.onclick = () => {
-  // Limpiar la lista antes de cargar
-  const lista = document.getElementById('listaGruposMover');
-  lista.innerHTML = '';
-
-  // Traer los grupos
-  fetch('main.php?action=listar_grupos')
-    .then(res => res.json())
-    .then(data => {
-      if (data.success && Array.isArray(data.grupos)) {
-        data.grupos.forEach(grupo => {
-          const li = document.createElement('li');
-          li.className = 'miembros-item';
-          li.style.display = 'flex';
-          li.style.justifyContent = 'space-between';
-          li.style.alignItems = 'center';
-
-          const nombre = document.createElement('span');
-          nombre.textContent = grupo.nombre;
-
-          const btnMover = document.createElement('button');
-          btnMover.textContent = 'Mover';
-          btnMover.className = 'btn';
-          btnMover.onclick = () => {
-            // Por ahora no hace nada
-            // Acá iría la lógica para mover la nota
-          };
-
-          li.appendChild(nombre);
-          li.appendChild(btnMover);
-          lista.appendChild(li);
-        });
-      } else {
-        lista.innerHTML = '<li>No se pudieron cargar los grupos.</li>';
-      }
-    })
-    .catch(() => {
-      lista.innerHTML = '<li>Error al conectar con el servidor.</li>';
-    });
-
-  
-  document.getElementById('modalMoverAGrupo').classList.remove('oculto');
-};
-
+    document.getElementById('modalMoverAGrupo').classList.remove('oculto');
+  };
 
   // Botón historial
   let historialBtn = null;
@@ -643,10 +607,6 @@ function agregarNota() {
         <h3 class="note-title">Título de nota</h3>
         <p class="note-content">Agregar texto :)</p>
         <div class="note-footer">
-          <div class="perfil">
-          <img src="images/descarga.svg" alt="Foto de perfil" class="foto-miembro" id="fotoPerfil">
-          <span class="nombre-usuario">usuario</span>
-          </div>
           <span class="note-date">${fechaHoraTexto}</span>
           </div>
           <button class="delete-btn">
@@ -656,7 +616,7 @@ function agregarNota() {
         <path d="M9 6V4a 1 1 0 0 1 1-1h4a 1 1 0 0 1 1 1v2" />
         </svg>
             </button>
-          </div>
+          
       `;
 
   //funcion para borrar nota

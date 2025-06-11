@@ -36,27 +36,82 @@
     </section>
     
     
-    <section class="guia">
-        <div class="custom-shape-divider-top">
-    <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-        <path d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z" class="shape-fill"></path>
+  <section class="guia">
+  <!-- Forma decorativa superior -->
+  <div class="custom-shape-divider-top">
+    <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg"
+         viewBox="0 0 1200 120" preserveAspectRatio="none">
+      <path d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19
+               c-82.26-17.34-168.06-16.33-250.45.39
+               -57.84,11.73-114,31.07-172,41.86
+               A600.21,600.21,0,0,1,0,27.35V120H1200V95.8
+               C1132.19,118.92,1055.71,111.31,985.66,92.83Z"
+            class="shape-fill">
+      </path>
     </svg>
-</div>
-        <div class="guia-texto">
-            <h2>¿Cómo funciona NoteIt?</h2>
-            <p>1. Registrate y accedé a tu cuenta.<br>
-               2. Invitá a otros para colaborar en tus ideas.<br>
-               3. Creá, editá y organizá tus notas fácilmente.<br>
-               4. Ingresá cuando quieras, estés donde estés.</p>
-        </div>
-      
-        <div class="video-tutorial">
-            <!-- aca va el video -->
-            <iframe width="100%" height="315" src="aa"
-                    title="Video tutorial" frameborder="0" allowfullscreen></iframe>
+  </div>
+
+  <!-- Título principal -->
+  <h2 class="titulo-guia">¿Cómo funciona NoteIt?</h2>
+
+  <!-- Contenedor del slider con controles -->
+  <div class="slider-container">
+
+    <!-- Botón izquierdo -->
+    <button class="slider-btn prev">&#8592;</button>
+
+    <!-- Contenido deslizable -->
+    <div class="slider-wrapper">
+      <div class="slider">
+        
+        <!-- Slide 1 -->
+        <div class="slide active">
+          <div class="contenido-slide">
+            <div class="guia-texto">
+              <p>
+                1. Registrate y accedé a tu cuenta.<br>
+                2. Invitá a otros para colaborar en tus ideas.<br>
+                3. Creá, editá y organizá tus notas fácilmente.<br>
+                4. Ingresá cuando quieras, estés donde estés.
+              </p>
+            </div>
+            <div class="video-tutorial">
+              <iframe width="100%" height="200"
+                      src="https://www.youtube.com/embed/VIDEO_ID"
+                      title="Video tutorial" frameborder="0" allowfullscreen>
+              </iframe>
+            </div>
+          </div>
         </div>
 
-    </section>
+        <!-- Slide 2 -->
+        <div class="slide">
+          <div class="contenido-slide">
+            <div class="guia-texto">
+              <p>
+                1. Agregá amigos.<br>
+                2. Compartan sus notas y empiecen a crear.<br>
+                3. Organizá tus ideas colaborativamente.<br>
+                4. Accedé desde cualquier dispositivo.
+              </p>
+            </div>
+            <div class="video-tutorial">
+              <iframe width="100%" height="200"
+                      src="https://www.youtube.com/embed/VIDEO_ID"
+                      title="Video tutorial" frameborder="0" allowfullscreen>
+              </iframe>
+            </div>
+          </div>
+        </div>
 
+      </div>
+    </div>
+
+    <!-- Botón derecho -->
+    <button class="slider-btn next">&#8594;</button>
+
+  </div>
+</section>
+<script src="index.js"></script>
 </body>
 </html>
