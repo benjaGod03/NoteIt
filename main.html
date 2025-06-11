@@ -166,17 +166,17 @@
 </div>
 
 <!-- Modal mover a grupos -->
-<div id="modalGruposNota" class="modal modalhistorialnota oculto">
-  <div class="modal-contenido">
+  <div id="modalMoverAGrupo" class="modal modalMiembros oculto">
+    <div class="modal-contenido">
       <div class="modal-header">
-          <h3>Mover a</h3>
+        <h3>Mover a</h3>
       </div>
-    <span class="cerrar-modal" onclick="document.getElementById('modalGruposNota').classList.add('oculto')">×</span>
-    <div id="gruposContenedor" class="wrapper">
-      <!-- Aca irian los grupos -->
+      <span class="cerrar-modal" onclick="cerrarModalGruposNota()">×</span>
+      <ul id="listaGruposMover" class="listaMiembrosGrupo">
+        <!-- Aca se cargan los grupos -->
+      </ul>
     </div>
   </div>
-</div>
 
 <!-- Mini modal para confirmar guardar cambios -->
 <div id="modalConfirmarGuardar" class="modal modalhistorialnota oculto">
