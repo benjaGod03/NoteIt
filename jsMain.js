@@ -162,7 +162,7 @@ function mostrarNotasDesdeBackend(notas, id_grupo = null) {
       fetch('main.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body
+        body 
       })
         .then(res => res.json())
         .then(data => {
@@ -225,7 +225,7 @@ function mostrarGruposDesdeBackend(grupos) {
     // Evento para eliminar grupo
     divGrupo.querySelector('.delete-grupo-btn').addEventListener('click', function (e) {
       e.stopPropagation();
-      eliminarGrupo(grupo.id, divGrupo);
+      salirdeGrupo(grupo.id, divGrupo);
     });
     // Insertar después del add-box
     const cajaAgregar = contenedor.querySelector('.add-box');
@@ -1074,12 +1074,12 @@ function verificarNotificacionesVacias() {
 }
 }
 
-function eliminarGrupo(idGrupo, elementoGrupo) {
-  if (!confirm('¿Seguro que quieres eliminar este grupo?')) return;
+function salirdeGrupo(idGrupo, elementoGrupo) {
+  if (!confirm('¿Seguro que quieres salir de este grupo?')) return;
   fetch('main.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: 'accion=eliminar_grupo&id_grupo=' + encodeURIComponent(idGrupo)
+    body: 'accion=abandonar_grupo&id_grupo=' + encodeURIComponent(idGrupo)
   })
     .then(res => res.json())
     .then(data => {
