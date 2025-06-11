@@ -67,8 +67,8 @@ body.dark-mode {
 }
 
 .logo-icon {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   font-weight: bold;
   object-fit: contain;
 }
@@ -185,7 +185,8 @@ body.dark-mode .note-box {
 }
 
 .note-title {
-  padding: 10px;
+  padding: 8px;
+  padding-right: 20px;
   top: 1px;
   margin: 0;
   font-size: 1rem;
@@ -197,6 +198,8 @@ body.dark-mode .note-box {
   -webkit-box-orient: vertical;
   line-clamp: 1;
   overflow: hidden;
+   word-wrap: break-word;
+  max-width: calc(100% - 28px);
 }
 body.dark-mode .note-title{color: white;}
 
@@ -271,7 +274,8 @@ body.dark-mode .note-content{color: #e5f3f6;}
   display: flex;
   align-items: center;
   justify-content: space-between; 
-  padding-top: 5px;
+  padding: 10px;
+  box-sizing: border-box;
 }
 nota-date{
   text-align: right;
@@ -298,7 +302,7 @@ nota-date{
   color: #666;
 }
 body.dark-mode .note-footer {
-  background-color: rgba(50, 50, 50, 0.5); 
+  background-color: rgba(240, 238, 232, 0.2); 
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   color: #aea9ba
 }
@@ -322,9 +326,9 @@ body.dark-mode .nombre-usuario{color: #aea9ba;}
 .ampliada {
   user-select: text;
   background-color: #fff8dc;
-  padding: 30px;
+  padding:20px;
   width: 90%;
-   max-width: 800px;
+  max-width: 800px;
   max-height: 80vh;
   overflow: auto;
   border-radius: 10px;
@@ -911,28 +915,34 @@ body.dark-mode .btn{background-color: #483D8B;}
     max-width: 100%;
     margin: 10px 10px;
     overflow-x: hidden;
-    padding: 10px; 
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     box-sizing: border-box;
+    grid-auto-rows: 150px;
   }
 
   .note-box {
-    max-width: 105px;
-    max-height: 105px;
-    padding: 10px;
+    max-width: 120px;
+    max-height: 120px;
+    
   }
 
   .note-title {
-    font-size: 0.7rem;
+    max-width: 90%;
+    margin: 2px;
+    font-size: 0.75rem;
+    
   }
 
   .note-content {
+    margin: 1px;
     font-size: 0.6rem;
   }
 
   .note-footer {
+    padding: 4px;
     font-size: 0.55rem;
+    box-sizing: border-box;
   }
 
   .add-box {
@@ -946,6 +956,22 @@ body.dark-mode .btn{background-color: #483D8B;}
     width: 30px;
     font-size: 20px;
   }
+  .foto-miembro {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  margin: 2px;
+}
+.nombre-usuario {
+  font-size: 0.55rem;
+}
+.delete-btn {
+  top: 6px;
+  right: 6px;
+  padding: 2px;
+  width: 20px;
+  height: 20px;
+}
 }
 
 html {
