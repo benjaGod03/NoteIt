@@ -22,3 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   showSlide(current);
 });
+document.addEventListener('keydown', function(e) {
+  if (e.key === "ArrowRight") document.querySelector(".slider-btn.next").click();
+  if (e.key === "ArrowLeft") document.querySelector(".slider-btn.prev").click();
+});

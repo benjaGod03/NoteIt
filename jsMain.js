@@ -198,20 +198,24 @@ function mostrarGruposDesdeBackend(grupos) {
     const divGrupo = document.createElement('div');
     divGrupo.className = 'add-box grupo-creado';
     divGrupo.innerHTML = `
-      <div class="icon"><svg width="200" height="200" viewBox="0 0 80 64" xmlns="http://www.w3.org/2000/svg" fill="none">
-      <circle cx="28" cy="18" r="8" fill="rgb(70, 81, 183)" />
-      <path fill="rgb(70, 81, 183)" d="M12 40c0-6 32-6 32 0v6H12v-6z" />
-      <circle cx="44" cy="18" r="8" fill="rgb(150, 160, 230)" />
-      <path fill="rgb(150, 160, 230)" d="M28 40c0-6 32-6 32 0v6H28v-6z" />
-      </svg></div>
+      <div class="icon"><svg width="200" height="200" viewBox="0 0 100 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <circle cx="35" cy="20" r="8" fill="#b388eb" />
+  <path fill="#b388eb" d="M20 42c0-6 30-6 30 0v6H20v-6z" />
+  <circle cx="65" cy="20" r="8" fill="#a29bfe" />
+  <path fill="#a29bfe" d="M50 42c0-6 30-6 30 0v6H50v-6z" />
+  <circle cx="50" cy="16" r="10" fill="#6c5ce7" />
+  <path fill="#6c5ce7" d="M30 42c0-8 40-8 40 0v6H30v-6z" />
+</svg>
+</div>
       <p>${grupo.nombre}</p>
+      
        <button class="delete-grupo-btn" title="Eliminar grupo">
-       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="#c00" stroke-width="2" viewBox="0 0 24 24">
-       <path d="M3 6h18M5 6l1 16h12l1-16H5z"/>
-       <path d="M10 11v6M14 11v6"/>
-       <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-      </svg>
-      </button>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#a00"  border="none" >
+              <path d="M3 6h18M5 6l1 16h12l1-16H5z" />
+              <path d="M10 11v6M14 11v6" />
+              <path d="M9 6V4a 1 1 0 0 1 1-1h4a 1 1 0 0 1 1 1v2" />
+            </svg>
+          </button>
     `;
     // Evento para abrir grupo SOLO si no se hace click en el botón eliminar
     divGrupo.addEventListener('click', function (e) {

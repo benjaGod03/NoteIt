@@ -128,7 +128,7 @@ body.dark-mode .wrapper {
   justify-content: center;
   margin: 5%;
   padding: 15px;
-  background: rgba(240, 240, 240, 0.8);
+  background-color: rgba(240, 238, 232, 0.6); 
   border: 2px dashed #66b8e6;
   border-radius: 10px;
   color: #666;
@@ -149,14 +149,15 @@ body.dark-mode .add-box {
 .add-box .icon {
   height: 60px;
   width: 60px;
-  border: 2px dashed #6c5ce7;
+  border: 2px dashed #4a148c;
   border-radius: 50%;
   font-size: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #6c5ce7;
+  color: #4a148c;
   font-weight: bold;
+  background-color: rgba(240, 238, 232, 0.2); 
 }
 
 /* Estilo de las notas */
@@ -433,7 +434,7 @@ body.dark-mode .ampliada{background-color: #aea9ba;}
 /*miembros de los grupos*/
 .modalMiembros .modal-contenido{
   width: 450px;
-  background-color: rgba(102, 184, 230, 0.6);
+  background-color: rgba(200, 160, 255, 0.2);
   border: 1px solid rgba(102, 184, 230, 0.4);
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(102, 184, 230, 0.3);
@@ -1000,6 +1001,10 @@ html {
    box-sizing: border-box;
 }
 body.dark-mode .grupo-creado p{color: #e5f3f6;}
+delete-grupo-btn{
+  background: none;
+  border: none;
+}
 
 /* Puntito rojo de notificaciones */
 #noti-dot {
