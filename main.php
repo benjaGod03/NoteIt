@@ -132,6 +132,7 @@ if (
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'actualizar_nombre') {
     $nuevoNombre = trim($_POST['nuevo_nombre'] ?? '');
     $correo = $_SESSION['correo'] ?? '';
+    $usuarioActual = $_SESSION['usuario'] ??'';
     $response = ['success' => false, 'message' => ''];
     if (empty($nuevoNombre) || empty($correo)) {
         $response['message'] = 'El nombre y el correo son obligatorios.';
@@ -150,6 +151,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['
             if ($existe > 0) {
                 $response['message'] = 'El nombre de usuario ya está en uso. Elige otro.';
             } else {
+                //Cambiar todas las referencias al nombre de usuario de los editores
+                $queryBackground = "UPDATE notas SET editor = :nuevoNombre where editor =:usuarioActual";
+                $stmtBackground = $pdo->prepare($queryBackground);
+                $stmtBackground->bindParam('nuevoNombre', $nuevoNombre);
+                $stmtBackground->bindParam('usuarioActual', $usuarioActual);
+                $stmtBackground->execute();
+                $queryBackgroundHistorial = "UPDATE notas_historial SET editor = :nuevoNombre where editor =:usuarioActual";
+                $stmtBackgroundHistorial = $pdo->prepare($queryBackgroundHistorial);
+                $stmtBackgroundHistorial->bindParam('nuevoNombre', $nuevoNombre);
+                $stmtBackgroundHistorial->bindParam('usuarioActual', $usuarioActual);
+                $stmtBackgroundHistorial->execute();
                 $query = "UPDATE datos SET usuario = :usuario WHERE correo = :correo";
                 $stmt = $pdo->prepare($query);
                 $stmt->bindParam(':usuario', $nuevoNombre);
