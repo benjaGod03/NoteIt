@@ -11,7 +11,7 @@ date_default_timezone_set('America/Argentina/Buenos_Aires');
 // Eliminar nota si se recibe por POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'eliminar') {
     if(isset($_POST['id_grupo']) && !empty($_POST['id_grupo'])){
-        $autor = $_POST['id_grupo'] ?? '';}
+        $autor = $_POST['id_grupo'] ?? '';} 
     else{
     $autor = $_SESSION['correo'] ?? '';
     }
@@ -638,6 +638,44 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST) && $_POST['accion'] ==
     } catch (PDOException $e) {
         $response['message'] = 'Error al restaurar la versión: ' . $e->getMessage();
     }
+    header('Content-Type: application/json');
+    echo json_encode($response);
+    exit();
+}
+
+//Compartir nota a un grupo
+if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'mover_nota'){
+    $uuid = $_POST['uuid'] ?? '';
+    $id_grupo = $_POST['id_grupo'] ?? '';
+    $editor = $_SESSION['usuario'] ?? '';
+    $nuevoUuid = $_POST['nuevo_uuid'] ?? '';
+    $response = ['success' => false, 'message' => ''];
+    if(empty($uuid) || empty($id_grupo)){
+        $response['message'] = 'UUID y ID de grupo son obligatorios.';
+    } else {
+        try {
+            $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo->exec("SET time_zone = '-03:00'");
+            //Insertar la nota en el grupo con un nuevo UUID
+            $queryInsert = "INSERT INTO notas (uuid, titulo, contenido, autor, editor) SELECT :nuevoUuid,titulo,contenido,:id_grupo,:editor FROM notas WHERE uuid = :uuid";
+            $stmtInsert = $pdo->prepare($queryInsert);
+            $stmtInsert->bindParam(':uuid', $uuid);
+            $stmtInsert->bindParam(':id_grupo', $id_grupo);
+            $stmtInsert->bindParam(':editor', $editor);
+            $stmtInsert->bindParam(':nuevoUuid', $nuevoUuid);
+            if ($stmtInsert->execute()) {
+                if ($stmtInsert->rowCount() > 0) {
+                    $response['success'] = true;
+                    $response['message'] = 'Nota compartida correctamente en el grupo.';
+                } else {
+                    $response['message'] = 'No se pudo compartir la nota en el grupo.';
+                }
+            } 
+        }catch (PDOException $e) {
+            $response['message'] = 'Error al compartir la nota: ' . $e->getMessage();
+        }
+    } 
     header('Content-Type: application/json');
     echo json_encode($response);
     exit();

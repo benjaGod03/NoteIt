@@ -367,8 +367,11 @@ function ampliarNota(notaOriginal) {
           btnMover.textContent = 'Mover';
           btnMover.className = 'btn';
           btnMover.onclick = () => {
-            // Por ahora no hace nada
-            // Acá iría la lógica para mover la nota
+            fetch('main.php', {method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: `accion=mover_nota&uuid=${encodeURIComponent(notaOriginal.getAttribute('data-uuid'))}&id_grupo=${encodeURIComponent(grupo.id)}&nuevo_uuid=${encodeURIComponent(generarUUID())}`
+            })
+            .then(res => res.json()) 
           };
 
           li.appendChild(nombre);
