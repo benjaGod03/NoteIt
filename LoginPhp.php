@@ -38,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Guardar solo el nombre de usuario en la sesión
                 $_SESSION['usuario'] = $usuarioEncontrado['usuario'];
                 $_SESSION['correo'] = $usuarioEncontrado['correo']; // Guardar el correo en la sesión
+                $_SESSION['foto'] = $usuarioEncontrado['foto']; // Guardar la foto en la sesión
                 header('Location: main.php'); // Redirigir a la página principal
                 exit();
             } else {

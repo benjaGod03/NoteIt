@@ -416,7 +416,7 @@ if($_SERVER['REQUEST_METHOD'] === 'GET' && isset ( $_GET['action'] ) && $_GET['a
             $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $pdo->exec("SET time_zone = '-03:00'");
-            $query = "SELECT miembro FROM grupo_miembros WHERE id_grupo = :idGrupo";
+            $query = "SELECT d.usuario,d.correo FROM datos d JOIN grupo_miembros g ON d.correo=g.miembro WHERE g.id_grupo = :idGrupo";
             $stmt = $pdo->prepare($query);
             $stmt->bindParam(':idGrupo', $idGrupo);
             $stmt->execute();
@@ -676,6 +676,22 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['a
             $response['message'] = 'Error al compartir la nota: ' . $e->getMessage();
         }
     } 
+    header('Content-Type: application/json');
+    echo json_encode($response);
+    exit();
+}
+
+if($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['accion']) && $_GET['accion'] === 'foto_editor'){
+    $editor = $_GET['editor'] ?? '';
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 
+    $queryInsert = "SELECT foto FROM datos WHERE usuario = :editor";
+    $stmtInsert = $pdo->prepare($queryInsert);
+    $stmtInsert->bindParam(":editor", $editor);
+    $stmtInsert->execute();
+    $foto = $stmtInsert->fetchColumn();
+    $response["success"] = true;
+    $response["foto"] = $foto;
     header('Content-Type: application/json');
     echo json_encode($response);
     exit();
