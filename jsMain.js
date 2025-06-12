@@ -544,23 +544,47 @@ function mostrarHistorialNota(uuid) {
     .then(res => res.json())
     .then(data => {
       if (data.success && Array.isArray(data.historial)) {
+        console.log(data.historial)
         const contenedor = document.getElementById('historialNotasContenedor');
         contenedor.innerHTML = '';
         data.historial.forEach(version => {
           const variante = document.createElement('div');
           variante.className = 'note-box';
           variante.uuid = uuid;
+          variante.editor = version.editor;
           let fechaTexto =  version.fecha ? new Date(version.fecha).toLocaleString() : '';
-          let editor = version.editor ? ` - ${version.editor}` : '';
+          //let editor = version.editor ? `${version.editor}` : '';
           variante.fecha = version.fecha;
           variante.style.background = colorPorEditor(version.editor);
           variante.innerHTML = `
             <h3 class="note-title">${version.titulo}</h3>
             <p class="note-content">${version.contenido}</p>
             <div class="note-footer">
-              <span class="note-date">${fechaTexto}${editor}</span>
+              <div class="perfil">
+              <img src="images/descarga.svg" alt="Foto de perfil" class="foto-miembro" id="fotoPerfilNotaHist">
+              <span class="nombre-usuario">${version.editor}</span>
+              </div>
+              <span class="note-date">${fechaTexto}</span>
+              </div>
             </div>
-          `;
+          `
+    setTimeout(() => {
+    fetch('main.php?accion=foto_editor&editor='+ encodeURIComponent(version.editor)
+    )
+     .then(res => res.json())
+     .then(data => {
+      console.log(version.editor)
+      console.log(data.foto)
+       if (data.success && data.foto) {
+        const fotoPerfilNotaHist = variante.querySelector('#fotoPerfilNotaHist')
+        if(fotoPerfilNotaHist){
+          fotoPerfilNotaHist.src = data.foto;
+        }
+       }
+         
+     })
+     .catch(err => console.error('Error al obtener la foto del editor:', err));
+    }, 0);
           contenedor.appendChild(variante);
           variante.addEventListener('click', function () {ampliarNotaVariante(variante);});
         });
