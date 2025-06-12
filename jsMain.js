@@ -135,11 +135,46 @@ function mostrarNotasDesdeBackend(notas, id_grupo = null) {
     if (editor) {
     nuevaNota.setAttribute('data-editor', editor);
     nuevaNota.style.background = colorPorEditor(editor);
-     }
-    
-    
+    }
+
+    if(id_grupo != null){
      nuevaNota.innerHTML = `
       <h3 class="note-title">${nota.titulo}</h3>
+      <p class="note-content">${nota.contenido.replace(/\n/g, '<br>')}</p>
+      <div class="note-footer">
+        <div class="perfil">
+        <img src="images/descarga.svg" alt="Foto de perfil" class="foto-miembro" id="fotoPerfilNota">
+        <span class="nombre-usuario">${editor ? ' - ' + editor : ''}</span>
+        </div>
+        <span class="note-date">${fechaTexto}</span>
+        <button class="delete-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#76448a" stroke-width="2">
+            <path d="M3 6h18M5 6l1 16h12l1-16H5z" />
+            <path d="M10 11v6M14 11v6" />
+            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+          </svg>
+        </button>
+      </div>
+    `
+    setTimeout(() => {
+    fetch('main.php?accion=foto_editor&editor='+ encodeURIComponent(editor)
+    )
+     .then(res => res.json())
+     .then(data => {
+       console.log('Respuesta del servidor:', data);
+       if (data.success && data.foto) {
+        const fotoPerfilNota = nuevaNota.querySelector('#fotoPerfilNota')
+        if(fotoPerfilNota){
+          console.log("Ruta devuelta:", data.foto);
+          fotoPerfilNota.src = data.foto;
+        }
+       } else {
+         console.error('Error al obtener la foto del editor:', data.message);
+       }
+     })
+     .catch(err => console.error('Error al obtener la foto del editor:', err));
+    }, 0)}
+    else{nuevaNota.innerHTML = `<h3 class="note-title">${nota.titulo}</h3>
       <p class="note-content">${nota.contenido.replace(/\n/g, '<br>')}</p>
       <div class="note-footer">
         <span class="note-date">${fechaTexto}${editor ? ' - ' + editor : ''}</span>
@@ -151,7 +186,7 @@ function mostrarNotasDesdeBackend(notas, id_grupo = null) {
           </svg>
         </button>
       </div>
-    `;
+    `};
     nuevaNota.querySelector('.delete-btn').addEventListener('click', function (e) {
       e.stopPropagation();
       const uuid = nuevaNota.getAttribute('data-uuid');
@@ -162,7 +197,7 @@ function mostrarNotasDesdeBackend(notas, id_grupo = null) {
       fetch('main.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body
+        body 
       })
         .then(res => res.json())
         .then(data => {
@@ -225,7 +260,7 @@ function mostrarGruposDesdeBackend(grupos) {
     // Evento para eliminar grupo
     divGrupo.querySelector('.delete-grupo-btn').addEventListener('click', function (e) {
       e.stopPropagation();
-      eliminarGrupo(grupo.id, divGrupo);
+      salirdeGrupo(grupo.id, divGrupo);
     });
     // Insertar después del add-box
     const cajaAgregar = contenedor.querySelector('.add-box');
@@ -367,8 +402,11 @@ function ampliarNota(notaOriginal) {
           btnMover.textContent = 'Mover';
           btnMover.className = 'btn';
           btnMover.onclick = () => {
-            // Por ahora no hace nada
-            // Acá iría la lógica para mover la nota
+            fetch('main.php', {method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: `accion=mover_nota&uuid=${encodeURIComponent(notaOriginal.getAttribute('data-uuid'))}&id_grupo=${encodeURIComponent(grupo.id)}&nuevo_uuid=${encodeURIComponent(generarUUID())}`
+            })
+            .then(res => res.json()) 
           };
 
           li.appendChild(nombre);
@@ -755,7 +793,7 @@ function inicializarPerfil() {
       const guardadaMenu = localStorage.getItem('fotoPerfilMenu');
       if (guardada) {
         foto.src = guardada;
-        fotoperfilMenu.src = guardadaMenu;
+        fotoPerfilMenu.src = guardadaMenu;
       } else {
         foto.src = 'images/descarga.svg'; // Imagen por defecto si no hay foto guardada
       }
@@ -854,6 +892,7 @@ function volverAGrupos() {
   document.getElementById('vista-grupo').style.display = 'none';
   document.getElementById('notas-grupales').style.display = 'block';
   document.getElementById('barra-secciones').style.display = 'flex'; // MUESTRA la barra
+  cargarGruposUsuario();
 }
 
 // Mostrar el modal perfil
@@ -1074,12 +1113,12 @@ function verificarNotificacionesVacias() {
 }
 }
 
-function eliminarGrupo(idGrupo, elementoGrupo) {
-  if (!confirm('¿Seguro que quieres eliminar este grupo?')) return;
+function salirdeGrupo(idGrupo, elementoGrupo) {
+  if (!confirm('¿Seguro que quieres salir de este grupo?')) return;
   fetch('main.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: 'accion=eliminar_grupo&id_grupo=' + encodeURIComponent(idGrupo)
+    body: 'accion=abandonar_grupo&id_grupo=' + encodeURIComponent(idGrupo)
   })
     .then(res => res.json())
     .then(data => {
@@ -1129,6 +1168,7 @@ function mostrarMiembrosGrupo() {
       const lista = document.getElementById('listaMiembrosGrupo');
       lista.innerHTML = '';
       lista.className = 'listaMiembrosGrupo';
+      console.log('Respuesta del servidor:', data);
      if (data.success && Array.isArray(data.miembros)) {
         data.miembros.forEach(miembro => {
           const li = document.createElement('li');
@@ -1138,8 +1178,8 @@ function mostrarMiembrosGrupo() {
           // Nombre del miembro
           const nombreSpan = document.createElement('span');
           nombreSpan.className = 'miembro-email';
-          nombreSpan.textContent = miembro.miembro;
-          nombreSpan.title = miembro.miembro;
+          nombreSpan.textContent = miembro.usuario;
+          nombreSpan.title = miembro.usuario;
           // Botón expulsar
           const btnExpulsar = document.createElement('button');
           btnExpulsar.textContent = 'Expulsar';
@@ -1147,7 +1187,7 @@ function mostrarMiembrosGrupo() {
           btnExpulsar.onclick = function() {
             // Acá después ponés la lógica para expulsar
             if (!confirm('¿Seguro que quieres expulsar este miembro?')) return;
-            fetch('main.php?action=expulsar_miembro&id_grupo=' + encodeURIComponent(grupoActivoId) + '&miembro=' + encodeURIComponent(miembro.miembro))
+            fetch('main.php?action=expulsar_miembro&id_grupo=' + encodeURIComponent(grupoActivoId) + '&miembro=' + encodeURIComponent(miembro.correo))
               .then(res => res.json())
               .then(data => {
                 if (data.success) {

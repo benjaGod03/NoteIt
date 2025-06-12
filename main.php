@@ -10,8 +10,8 @@ date_default_timezone_set('America/Argentina/Buenos_Aires');
 
 // Eliminar nota si se recibe por POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'eliminar') {
-    if($_POTS['id_grupo'] != '0'){
-        $autor = $_POST['id_grupo'] ?? '';}
+    if(isset($_POST['id_grupo']) && !empty($_POST['id_grupo'])){
+        $autor = $_POST['id_grupo'] ?? '';} 
     else{
     $autor = $_SESSION['correo'] ?? '';
     }
@@ -25,6 +25,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             // Establecer zona horaria de MySQL a GMT-3 (Argentina)
             $pdo->exec("SET time_zone = '-03:00'");
+            $queryHistorial = "DELETE FROM notas_historial where uuid = :uuid AND autor = :autor";
+            $stmtHistorial = $pdo->prepare($queryHistorial);
+            $stmtHistorial->bindParam(':uuid', $uuid);
+            $stmtHistorial->bindParam(':autor', $autor);
+            $stmtHistorial->execute();
             $query = "DELETE FROM notas WHERE uuid = :uuid AND autor = :autor";
             $stmt = $pdo->prepare($query);
             $stmt->bindParam(':uuid', $uuid);
@@ -348,7 +353,7 @@ if($_SERVER['REQUEST_METHOD'] === 'GET' && $_GET["action"] ==='eliminar_notifica
 }
 
 // Eliminar grupo (y sus miembros y notas)
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'eliminar_grupo') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'abandonar_grupo') {
     $idGrupo = $_POST['id_grupo'] ?? '';
     $correo = $_SESSION['correo'] ?? '';
     $response = ['success' => false, 'message' => ''];
@@ -364,22 +369,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['
             $stmt->bindParam(':idGrupo', $idGrupo);
             $stmt->execute();
             $grupo = $stmt->fetch(PDO::FETCH_ASSOC);
-            if (!$grupo || $grupo['creador'] !== $correo) {
-                $response['message'] = 'Solo el creador puede eliminar el grupo.';
-            } else {
-                // Eliminar notas del grupo
-                $stmtNotas = $pdo->prepare("DELETE FROM notas WHERE autor = :idGrupo");
-                $stmtNotas->bindParam(':idGrupo', $idGrupo);
-                $stmtNotas->execute();
-                // Eliminar miembros del grupo
-                $stmtMiembros = $pdo->prepare("DELETE FROM grupo_miembros WHERE id_grupo = :idGrupo");
-                $stmtMiembros->bindParam(':idGrupo', $idGrupo);
-                $stmtMiembros->execute();
-                // Eliminar el grupo
-                $stmtGrupo = $pdo->prepare("DELETE FROM grupos WHERE id = :idGrupo");
-                $stmtGrupo->bindParam(':idGrupo', $idGrupo);
-                $stmtGrupo->execute();
+            if (!$grupo || $grupo['creador'] == $correo) {
+                $stmtM = $pdo->prepare("SELECT miembro FROM grupo_miembros WHERE id_grupo = :idGrupo");
+                $stmtM->bindParam(':idGrupo', $idGrupo);
+                $stmtM->execute();
+                $miembros = $stmtM->fetchAll(PDO::FETCH_COLUMN);
+                if (count($miembros) == 1) { $stmtEliminar = $pdo->prepare ("DELETE FROM grupo_miembros where id_grupo = :idGrupo");
+                    $stmtEliminar->bindParam(':idGrupo', $idGrupo);
+                    $stmtEliminar->execute();
+                    $stmtNotasHistorial = $pdo->prepare('DELETE FROM notas_historial WHERE autor = :idGrupo');
+                    $stmtNotasHistorial->bindParam(':idGrupo', $idGrupo);
+                    $stmtNotasHistorial->execute();
+                    $stmtNotas = $pdo->prepare('DELETE FROM notas WHERE autor = :idGrupo');
+                    $stmtNotas->bindParam(':idGrupo', $idGrupo);
+                    $stmtNotas->execute();
+                    $stmtEliminar = $pdo->prepare("DELETE FROM grupos where id = :idGrupo");
+                    $stmtEliminar->bindParam(':idGrupo', $idGrupo);
+                    $stmtEliminar->execute();
+                    $response['success'] = true;
+                    $response['message'] = 'El grupo ha sido eliminado correctamente.';
+                } 
+                else{$response['message'] = 'El creador no puede abandonar un grupo que aun tiene miembros.';}
+            } else { $stmtEliminarM = $pdo->prepare('DELETE FROM grupo_miembros WHERE id_grupo = :idGrupo and miembro = :miembro');
+                $stmtEliminarM->bindParam(':miembro', $correo);
+                $stmtEliminarM->bindParam(':idGrupo', $idGrupo);
+                $stmtEliminarM->execute();
                 $response['success'] = true;
+                $response['message'] = 'Has abandonado el grupo correctamente.';
             }
         } catch (PDOException $e) {
             $response['message'] = 'Error al eliminar el grupo: ' . $e->getMessage();
@@ -389,6 +405,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['
     echo json_encode($response);
     exit();}
 
+//Recuperar miembros de un grupo.
 if($_SERVER['REQUEST_METHOD'] === 'GET' && isset ( $_GET['action'] ) && $_GET['action'] === 'miembros_grupo') {
     $idGrupo = $_GET['id_grupo'] ?? '';
     $response = ['success' => false, 'miembros' => [], 'message' => ''];
@@ -399,7 +416,7 @@ if($_SERVER['REQUEST_METHOD'] === 'GET' && isset ( $_GET['action'] ) && $_GET['a
             $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $pdo->exec("SET time_zone = '-03:00'");
-            $query = "SELECT miembro FROM grupo_miembros WHERE id_grupo = :idGrupo";
+            $query = "SELECT d.usuario,d.correo FROM datos d JOIN grupo_miembros g ON d.correo=g.miembro WHERE g.id_grupo = :idGrupo";
             $stmt = $pdo->prepare($query);
             $stmt->bindParam(':idGrupo', $idGrupo);
             $stmt->execute();
@@ -418,6 +435,7 @@ if($_SERVER['REQUEST_METHOD'] === 'GET' && isset ( $_GET['action'] ) && $_GET['a
     echo json_encode($response);
     exit();}
 
+//Expulsar a un miembro de un grupo, siempre que seas el creador.
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'expulsar_miembro') {
     $correo = $_SESSION['correo'] ?? '';
     $idGrupo = $_GET['id_grupo'] ?? '';
@@ -492,6 +510,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
     exit();
 }
 
+//Guardar la nueva foto de perfil del usuario y eliminar la anterior.
 if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'guardar_foto'){
    $usuario = $_SESSION['correo'] ?? '';
    $response = ['success' => false];
@@ -545,6 +564,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['a
     exit();
 }
 
+//Obtener foto del usuario conectado
 if($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'obtener_foto'){
     $usuario = $_SESSION['correo'] ?? '';
     $response = ['success' => false, 'foto' => '', 'message' => ''];
@@ -575,6 +595,8 @@ if($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['acti
     exit();
 }
 
+
+//Restaurar la nota a la version seleccionada
 if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST) && $_POST['accion'] === 'restaurar_version'){
     $uuid = $_POST['uuid'] ?? '';
     $fecha = $_POST['fecha'] ?? '';
@@ -616,6 +638,60 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST) && $_POST['accion'] ==
     } catch (PDOException $e) {
         $response['message'] = 'Error al restaurar la versión: ' . $e->getMessage();
     }
+    header('Content-Type: application/json');
+    echo json_encode($response);
+    exit();
+}
+
+//Compartir nota a un grupo
+if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'mover_nota'){
+    $uuid = $_POST['uuid'] ?? '';
+    $id_grupo = $_POST['id_grupo'] ?? '';
+    $editor = $_SESSION['usuario'] ?? '';
+    $nuevoUuid = $_POST['nuevo_uuid'] ?? '';
+    $response = ['success' => false, 'message' => ''];
+    if(empty($uuid) || empty($id_grupo)){
+        $response['message'] = 'UUID y ID de grupo son obligatorios.';
+    } else {
+        try {
+            $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo->exec("SET time_zone = '-03:00'");
+            //Insertar la nota en el grupo con un nuevo UUID
+            $queryInsert = "INSERT INTO notas (uuid, titulo, contenido, autor, editor) SELECT :nuevoUuid,titulo,contenido,:id_grupo,:editor FROM notas WHERE uuid = :uuid";
+            $stmtInsert = $pdo->prepare($queryInsert);
+            $stmtInsert->bindParam(':uuid', $uuid);
+            $stmtInsert->bindParam(':id_grupo', $id_grupo);
+            $stmtInsert->bindParam(':editor', $editor);
+            $stmtInsert->bindParam(':nuevoUuid', $nuevoUuid);
+            if ($stmtInsert->execute()) {
+                if ($stmtInsert->rowCount() > 0) {
+                    $response['success'] = true;
+                    $response['message'] = 'Nota compartida correctamente en el grupo.';
+                } else {
+                    $response['message'] = 'No se pudo compartir la nota en el grupo.';
+                }
+            } 
+        }catch (PDOException $e) {
+            $response['message'] = 'Error al compartir la nota: ' . $e->getMessage();
+        }
+    } 
+    header('Content-Type: application/json');
+    echo json_encode($response);
+    exit();
+}
+
+if($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['accion']) && $_GET['accion'] === 'foto_editor'){
+    $editor = $_GET['editor'] ?? '';
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 
+    $queryInsert = "SELECT foto FROM datos WHERE usuario = :editor";
+    $stmtInsert = $pdo->prepare($queryInsert);
+    $stmtInsert->bindParam(":editor", $editor);
+    $stmtInsert->execute();
+    $foto = $stmtInsert->fetchColumn();
+    $response["success"] = true;
+    $response["foto"] = $foto;
     header('Content-Type: application/json');
     echo json_encode($response);
     exit();
