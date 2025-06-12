@@ -144,7 +144,7 @@ function mostrarNotasDesdeBackend(notas, id_grupo = null) {
       <div class="note-footer">
         <div class="perfil">
         <img src="images/descarga.svg" alt="Foto de perfil" class="foto-miembro" id="fotoPerfilNota">
-        <span class="nombre-usuario">${editor ? ' - ' + editor : ''}</span>
+        <span class="nombre-usuario">${editor}</span>
         </div>
         <span class="note-date">${fechaTexto}</span>
         <button class="delete-btn">
@@ -161,16 +161,13 @@ function mostrarNotasDesdeBackend(notas, id_grupo = null) {
     )
      .then(res => res.json())
      .then(data => {
-       console.log('Respuesta del servidor:', data);
        if (data.success && data.foto) {
         const fotoPerfilNota = nuevaNota.querySelector('#fotoPerfilNota')
         if(fotoPerfilNota){
-          console.log("Ruta devuelta:", data.foto);
           fotoPerfilNota.src = data.foto;
         }
-       } else {
-         console.error('Error al obtener la foto del editor:', data.message);
        }
+         
      })
      .catch(err => console.error('Error al obtener la foto del editor:', err));
     }, 0)}
@@ -310,7 +307,7 @@ function agregarNotaAGrupo() {
         <div class="note-footer">
         <div class="perfil">
           <img src="images/descarga.svg" alt="Foto de perfil" class="foto-miembro" id="fotoPerfil">
-          <span class="nombre-usuario">usuario</span>
+          <span class="nombre-usuario">Nueva Nota</span>
           </div>
           <span class="note-date">${fechaHoraTexto}</span>
           </div>
