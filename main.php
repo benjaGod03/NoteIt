@@ -469,17 +469,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
                 $response['message'] = 'Solo el creador puede expulsar miembros.';
             } else {
                 // Eliminar al miembro del grupo
+                if($miembro!=$correo){
                 $stmtMiembro = $pdo->prepare("DELETE FROM grupo_miembros WHERE id_grupo = :idGrupo AND miembro = :miembro");
                 $stmtMiembro->bindParam(':idGrupo', $idGrupo);
                 $stmtMiembro->bindParam(':miembro', $miembro);
-                if ($stmtMiembro->execute()) {
-                    if ($stmtMiembro->rowCount() > 0) {
-                        $response['success'] = true;
+                    if ($stmtMiembro->execute()) {
+                        if ($stmtMiembro->rowCount() > 0) {
+                            $response['success'] = true;
+                        } else {
+                            $response['message'] = 'El miembro no pertenece a este grupo.';
+                        }
                     } else {
-                        $response['message'] = 'El miembro no pertenece a este grupo.';
-                    }
-                } else {
-                    $response['message'] = 'Error al expulsar al miembro.';
+                        $response['message'] = 'Error al expulsar al miembro.';
+                    }}
+                else{$response['message'] = 'No se puede expulsar al creador';
                 }
             }
         } catch (PDOException $e) {
